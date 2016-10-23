@@ -258,24 +258,24 @@
 ;;  (setq ns-function-modifier 'super)  ; make Fn key do Supr
 )
 
-;; (use-package ace-jump-mode
-;;   :ensure t
-;; ;;  :config
-;;   :init
-;;   (add-hook 'haskell-mode-hook #'ace-jump-mode)
-;;   (defun add-keys-to-ace-jump-mode (prefix c &optional mode)
-;;     (define-key global-map
-;;       (read-kbd-macro (concat prefix (string c)))
-;;       `(lambda ()
-;; 	 (interactive)
-;; 	 (funcall (if (eq ',mode 'word)
-;; 		      #'ace-jump-word-mode
-;; 		    #'ace-jump-char-mode) ,c))))
-;;   (require 'cl)
-;;   (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-" c))
-;;   (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-" c))
-;;   (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
-;;  (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
+ (use-package ace-jump-mode
+   :ensure t
+   :init
+   (add-hook 'haskell-mode-hook #'ace-jump-mode)
+   (require 'cl)   
+   (defun add-keys-to-ace-jump-mode (prefix c &optional mode)
+     (define-key global-map
+       (read-kbd-macro (concat prefix (string c)))
+       `(lambda ()
+ 	 (interactive)
+ 	 (funcall (if (eq ',mode 'word)
+ 		      #'ace-jump-word-mode
+ 		    #'ace-jump-char-mode) ,c))))
+
+   (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-" c))
+   (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-" c))
+   (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
+   (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
 
   
 (custom-set-variables
@@ -285,7 +285,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (paredit-everywhere open-junk-file magit haskell-mode helm multiple-cursors projectile rainbow-delimiters smartparens benchmark-init use-package))))
+    (ace-jump-mode paredit-everywhere open-junk-file magit haskell-mode helm multiple-cursors projectile rainbow-delimiters smartparens benchmark-init use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
