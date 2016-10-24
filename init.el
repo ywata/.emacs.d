@@ -48,8 +48,8 @@
 ;;; Code:
 (require 'package)
 
-(add-to-list 'package-archives
-	     '("elpax" . "http://elpa.gnu.org/packages/"))
+;(add-to-list 'package-archives
+;	     '("elpa" . "http://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives
 	     '("org" . "http://orgmode.org/elpa/"))
 (add-to-list 'package-archives
@@ -86,7 +86,9 @@
 (use-package rainbow-delimiters
   :ensure t
   :config
-  (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode))
+  (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)
+  )
 
 (use-package open-junk-file
 	     :ensure t)
@@ -252,30 +254,30 @@
 (when darwin-p
   (setq mac-right-option-modifier 'hyper)
   (setq ns-right-option-modifier 'hyper)
-;;  (setq mac-command-modifier 'meta) ; make cmd key do Meta
-;;  (setq mac-option-modifier 'hyper) ; make opt key do Hyper
-;;  (setq mac-control-modifier 'control) ; make Control key do Control
-;;  (setq ns-function-modifier 'super)  ; make Fn key do Supr
+  ;;  (setq mac-command-modifier 'meta) ; make cmd key do Meta
+  ;;  (setq mac-option-modifier 'hyper) ; make opt key do Hyper
+  ;;  (setq mac-control-modifier 'control) ; make Control key do Control
+  ;;  (setq ns-function-modifier 'super)  ; make Fn key do Supr
 )
-
- (use-package ace-jump-mode
-   :ensure t
-   :init
-   (add-hook 'haskell-mode-hook #'ace-jump-mode)
-   (require 'cl)   
-   (defun add-keys-to-ace-jump-mode (prefix c &optional mode)
-     (define-key global-map
-       (read-kbd-macro (concat prefix (string c)))
-       `(lambda ()
- 	 (interactive)
- 	 (funcall (if (eq ',mode 'word)
- 		      #'ace-jump-word-mode
- 		    #'ace-jump-char-mode) ,c))))
-
-   (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-" c))
-   (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-" c))
-   (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
-   (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
+(require 'cl)   
+(use-package ace-jump-mode
+	     :ensure t
+	     :init
+	     (add-hook 'haskell-mode-hook #'ace-jump-mode)
+	     
+	     (defun add-keys-to-ace-jump-mode (prefix c &optional mode)
+	       (define-key global-map
+		 (read-kbd-macro (concat prefix (string c)))
+		 `(lambda ()
+		    (interactive)
+		    (funcall (if (eq ',mode 'word)
+				 #'ace-jump-word-mode
+			       #'ace-jump-char-mode) ,c))))
+	     
+	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-" c))
+	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-" c))
+	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
+	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
 
   
 (custom-set-variables
