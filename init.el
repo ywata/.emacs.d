@@ -26,6 +26,8 @@
 ;; Emacs configuration of Yasu based on Anler Hp's configuration.
 
 ;;
+(setq debug-on-error t)
+(setq exec-path (list exec-path "/usr/local/bin"))
 (setq backup-inhibited t)
 (define-key global-map "\C-h" 'delete-backward-char)
 (define-key global-map "\C-j" 'scroll-down)
@@ -38,12 +40,16 @@
 (define-key ctl-Q-keymap (kbd "\C-e") 'next-error)
 (define-key ctl-Q-keymap (kbd "\C-n") 'view-window-next-buffer)
 (define-key ctl-Q-keymap (kbd "\C-p") 'view-window-prev-buffer)
+(define-key ctl-Q-keymap (kbd "\C-s") 'helm-swoop)
+;(define-key ctl-Q-keymap (kbd "s") 'avy-isearch)
 (define-key ctl-Q-keymap (kbd "\C-w") 'whitespace-mode)
 
 (when (window-system)
   (dolist (key '("\C-z"))
 	       (global-unset-key key)))
 
+(scroll-bar-mode -1)
+(linum-mode -1)
 ;(setq debug-on-error t)
 ;;; Code:
 (require 'package)
@@ -119,7 +125,8 @@
   :init
   (add-hook 'haskell-mode-hook #'projectile-mode))
 
-
+;;(use-package malabar-mode
+;;  :ensure t)
 
 (use-package multiple-cursors
   :ensure t
@@ -130,6 +137,7 @@
          ("C-S-c C-S-c" . mc/edit-lines)
          ("C-M-0" . mc/mark-all-like-this)
          ("M-<down-mouse-1>" . mc/add-cursor-on-click)))
+
 
 (use-package term+
   :defer t)
@@ -194,8 +202,6 @@
       ;(haskell-mode-stylish-buffer)
       )))
 
-
-
 (use-package subword
   :defer t
   :diminish subword-mode
@@ -229,6 +235,7 @@
 ;;  :init (setq github-browse-file-show-line-at-point t))
 
 
+
 ;(use-package intero
 ;  :ensure t
 ;  :defer t)
@@ -258,12 +265,30 @@
   ;;  (setq mac-option-modifier 'hyper) ; make opt key do Hyper
   ;;  (setq mac-control-modifier 'control) ; make Control key do Control
   ;;  (setq ns-function-modifier 'super)  ; make Fn key do Supr
-)
-(require 'cl)   
+  )
+
+;(use-package helm-migemo
+;; :ensure t)
+(use-package helm-swoop
+  :ensure t)
+
+(use-package avy
+  :ensure t)
+
+(use-package ace-isearch
+  :ensure t
+  :config
+  (global-ace-isearch-mode 1))
+
+(use-package programmer-dvorak
+  :ensure t)
+
 (use-package ace-jump-mode
 	     :ensure t
-	     :init
+	     :config
+	     (require 'cl)
 	     (add-hook 'haskell-mode-hook #'ace-jump-mode)
+	     (add-hook 'emacs-mode-hook #'ace-jump-mode)
 	     
 	     (defun add-keys-to-ace-jump-mode (prefix c &optional mode)
 	       (define-key global-map
@@ -279,7 +304,7 @@
 	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
 
-  
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -287,7 +312,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (ace-jump-mode paredit-everywhere open-junk-file magit haskell-mode helm multiple-cursors projectile rainbow-delimiters smartparens benchmark-init use-package))))
+    (malabar-mode helm-migemo use-package smartparens rainbow-delimiters projectile programmer-dvorak paredit-everywhere open-junk-file multiple-cursors magit haskell-mode diminish bind-key ace-isearch))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
