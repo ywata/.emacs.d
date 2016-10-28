@@ -81,26 +81,26 @@
 	     :demand t)
 
 ;;(use-package benchmark-init
-;;  :ensure t
+;;  :ensure
 ;;  :config (benchmark-init/activate))
 
 (use-package smartparens
-  :ensure t
+  :ensure
   :config
   (add-hook 'haskell-mode-hook #'smartparens-mode))
 
 (use-package rainbow-delimiters
-  :ensure t
+  :ensure
   :config
   (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)
   )
 
 (use-package open-junk-file
-	     :ensure t)
+	     :ensure)
 
 (use-package paredit-everywhere
-  :ensure t
+  :ensure 
   :config
   (add-hook 'haskell-mode-hook #'paredit-everywhere-mode)
   )
@@ -129,7 +129,7 @@
 ;;  :ensure t)
 
 (use-package multiple-cursors
-  :ensure t
+  :ensure
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
          ("C-M->" . mc/skip-to-next-like-this)
@@ -150,7 +150,7 @@
 
 
 (use-package helm
-  :ensure t
+  :ensure
   :config
   (helm-mode 1)
   (define-key global-map (kbd "M-x")     'helm-M-x)
@@ -169,7 +169,7 @@
 
 
 (use-package haskell-mode
-  :ensure t
+  :ensure
   :mode "\\.hs\\'"
   :bind (:map haskell-mode-map
               ("C-c C-," . haskell-move-nested-left)
@@ -210,7 +210,7 @@
 
 
 (use-package magit
-  :ensure t
+  :ensure
   :defer t
   :if (display-graphic-p)
   :init
@@ -237,7 +237,7 @@
 
 
 ;(use-package intero
-;  :ensure t
+;  :ensure
 ;  :defer t)
 
 
@@ -270,18 +270,18 @@
 ;(use-package helm-migemo
 ;; :ensure t)
 (use-package helm-swoop
-  :ensure t)
+  :ensure)
 
 (use-package avy
-  :ensure t)
+  :ensure)
 
 (use-package ace-isearch
-  :ensure t
+  :ensure
   :config
   (global-ace-isearch-mode 1))
 
 (use-package programmer-dvorak
-  :ensure t)
+  :ensure)
 
 (use-package ace-jump-mode
 	     :ensure t
