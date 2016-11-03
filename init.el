@@ -27,7 +27,11 @@
 
 ;;
 (setq debug-on-error t)
-(setq exec-path (list exec-path "/usr/local/bin"))
+
+(setq exec-path (append exec-path '("/usr/local/bin")))
+
+
+
 (setq backup-inhibited t)
 (define-key global-map "\C-h" 'delete-backward-char)
 (define-key global-map "\C-j" 'scroll-down)
@@ -36,7 +40,7 @@
 (define-prefix-command 'ctl-Q-keymap)
 (global-set-key (kbd "C-q") 'ctl-Q-keymap)
 (define-key ctl-Q-keymap (kbd "\C-d") 'view-window-mode)
-					;(define-key ctl-Q-keymap (kbd "\C-e") 'eval-last-sexp)
+;;(define-key ctl-Q-keymap (kbd "\C-e") 'eval-last-sexp)
 (define-key ctl-Q-keymap (kbd "\C-e") 'next-error)
 (define-key ctl-Q-keymap (kbd "\C-n") 'view-window-next-buffer)
 (define-key ctl-Q-keymap (kbd "\C-p") 'view-window-prev-buffer)
@@ -74,7 +78,7 @@
 
 (use-package view-window
   :load-path "site-lisp"
-  :demand t)
+  :demand)
 
 (use-package whitespace
 	     :load-path "site-lisp"
@@ -86,18 +90,20 @@
 
 (use-package smartparens
   :ensure
+  :demand
   :config
   (add-hook 'haskell-mode-hook #'smartparens-mode))
 
 (use-package rainbow-delimiters
   :ensure
+  :demand
   :config
   (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)
   )
 
 (use-package open-junk-file
-	     :ensure)
+  :ensure)
 
 (use-package paredit-everywhere
   :ensure 
@@ -106,14 +112,14 @@
   )
 
 ;(use-package paren
-;  :defer t
+;  :defer 3
 ;  :init
 ;  (add-hook 'emacs-lisp-mode-hook 'show-paren-mode)
 ;  (add-hook 'haskell-mode-hook 'show-paren-mode)
 ;  (add-hook 'sgml-mode-hook 'show-paren-mode))
 
 ;(use-package elec-pair
-;  :defer t
+;  :defer 3
 ;  :init
 ;  (add-hook 'emacs-lisp-mode-hook 'electric-pair-mode)
 ;  (add-hook 'css-mode-hook 'electric-pair-mode)
@@ -121,15 +127,18 @@
 
 
 (use-package projectile
-  :ensure t
-  :init
-  (add-hook 'haskell-mode-hook #'projectile-mode))
+  :ensure
+  :config
+  (add-hook 'haskell-mode-hook #'projectile-mode)
+  (add-hook 'jdee-mode-hook    #'projectile-mode)
+  )
 
 ;;(use-package malabar-mode
 ;;  :ensure t)
 
 (use-package multiple-cursors
   :ensure
+  :defer 10
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
          ("C-M->" . mc/skip-to-next-like-this)
@@ -140,9 +149,9 @@
 
 
 (use-package term+
-  :defer t)
+  :defer 10)
 ;; (use-package hindent
-;;   :defer t
+;;   :defer 3
 ;;   :init
 ;;   (add-to-list 'load-path "~/.local/bin")
 ;;   (add-hook 'haskell-mode-hook #'hindent-mode))
@@ -166,7 +175,28 @@
   (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
   (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
   )
+(use-package helm-ls-git
+  :ensure
+  :defer 3
+  :bind
+  ("C-q C-l" . helm-ls-git-ls)
+  :config
+  (global-set-key (kbd "C-x C-d") #'helm-browse-project)
+  )
+(use-package mu4e
+  :load-path "site-lisp/mu/mu4e"
+  
+  )
+;(use-package offlineimap
+;  :ensure
+;  :defer 3)
+;(use-package )
 
+
+(use-package jdee
+  :ensure
+  :defer 3
+  )
 
 (use-package haskell-mode
   :ensure
@@ -203,7 +233,7 @@
       )))
 
 (use-package subword
-  :defer t
+  :defer 3
   :diminish subword-mode
   :init
   (add-hook 'haskell-mode-hook 'subword-mode))
@@ -211,7 +241,7 @@
 
 (use-package magit
   :ensure
-  :defer t
+  :defer 3
   :if (display-graphic-p)
   :init
   (add-hook 'magit-mode-hook 'hl-line-mode)
@@ -238,7 +268,7 @@
 
 ;(use-package intero
 ;  :ensure
-;  :defer t)
+;  :defer 3)
 
 
 (setq darwin-p  (eq system-type 'darwin)
@@ -270,7 +300,9 @@
 ;(use-package helm-migemo
 ;; :ensure t)
 (use-package helm-swoop
-  :ensure)
+  :ensure
+  :defer
+  )
 
 (use-package avy
   :ensure)
@@ -278,31 +310,40 @@
 (use-package ace-isearch
   :ensure
   :config
-  (global-ace-isearch-mode 1))
+  (global-ace-isearch-mode 1)
+  (setq ace-isearch-function #'avy-goto-char)
+  )
 
 (use-package programmer-dvorak
-  :ensure)
+  :ensure
+  :config
+  (set-input-method 'programmer-dvorak)
+  )
 
-(use-package ace-jump-mode
-	     :ensure t
-	     :config
-	     (require 'cl)
-	     (add-hook 'haskell-mode-hook #'ace-jump-mode)
-	     (add-hook 'emacs-mode-hook #'ace-jump-mode)
+(use-package z3-mode
+  :ensure
+  :defer 10)
+
+;; (use-package ace-jump-mode
+;; 	     :ensure t
+;; 	     :config
+;; 	     (require 'cl)
+;; 	     (add-hook 'haskell-mode-hook #'ace-jump-mode)
+;; 	     (add-hook 'emacs-mode-hook #'ace-jump-mode)
 	     
-	     (defun add-keys-to-ace-jump-mode (prefix c &optional mode)
-	       (define-key global-map
-		 (read-kbd-macro (concat prefix (string c)))
-		 `(lambda ()
-		    (interactive)
-		    (funcall (if (eq ',mode 'word)
-				 #'ace-jump-word-mode
-			       #'ace-jump-char-mode) ,c))))
+;; 	     (defun add-keys-to-ace-jump-mode (prefix c &optional mode)
+;; 	       (define-key global-map
+;; 		 (read-kbd-macro (concat prefix (string c)))
+;; 		 `(lambda ()
+;; 		    (interactive)
+;; 		    (funcall (if (eq ',mode 'word)
+;; 				 #'ace-jump-word-mode
+;; 			       #'ace-jump-char-mode) ,c))))
 	     
-	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-" c))
-	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-" c))
-	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
-	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
+;; 	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-" c))
+;; 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-" c))
+;; 	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
+;; 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
 
 
 (custom-set-variables
@@ -312,7 +353,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (malabar-mode helm-migemo use-package smartparens rainbow-delimiters projectile programmer-dvorak paredit-everywhere open-junk-file multiple-cursors magit haskell-mode diminish bind-key ace-isearch))))
+    (z3-mode z3 jdee mu4e offlineimap helm-ls-git malabar-mode helm-migemo use-package smartparens rainbow-delimiters projectile programmer-dvorak paredit-everywhere open-junk-file multiple-cursors magit haskell-mode diminish bind-key ace-isearch))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
