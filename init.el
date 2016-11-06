@@ -52,8 +52,12 @@
   (dolist (key '("\C-z"))
 	       (global-unset-key key)))
 
-(scroll-bar-mode -1)
-(linum-mode -1)
+(setq linum-delay t)
+(defadvice linum-schedule (around my-linum-schedule () activate)
+  (run-with-idle-timer 1.0 nil #'linum-update-current))
+
+;;(linum-mode -1)
+
 ;(setq debug-on-error t)
 ;;; Code:
 (require 'package)
@@ -81,8 +85,8 @@
   :demand)
 
 (use-package whitespace
-	     :load-path "site-lisp"
-	     :demand t)
+  :load-path "site-lisp"
+  :demand)
 
 ;;(use-package benchmark-init
 ;;  :ensure
@@ -108,7 +112,7 @@
 (use-package paredit-everywhere
   :ensure 
   :config
-  (add-hook 'haskell-mode-hook #'paredit-everywhere-mode)
+;;  (add-hook 'haskell-mode-hook #'paredit-everywhere-mode)
   )
 
 ;(use-package paren
@@ -183,6 +187,16 @@
   :config
   (global-set-key (kbd "C-x C-d") #'helm-browse-project)
   )
+
+(use-package helm-projectile
+  :ensure
+  :defer 5
+  :config
+  (helm-projectile-on))
+
+(use-package dired+
+  :ensure)
+
 (use-package mu4e
   :load-path "site-lisp/mu/mu4e"
   
@@ -193,10 +207,10 @@
 ;(use-package )
 
 
-(use-package jdee
-  :ensure
-  :defer 3
-  )
+;;(use-package jdee
+;;  :ensure
+;;  :defer 3
+;;  )
 
 (use-package haskell-mode
   :ensure
@@ -218,11 +232,11 @@
   :init
   (add-hook 'haskell-mode-hook 'haskell-doc-mode)
   (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-;  (add-hook 'haskell-mode-hook (defun haskell-project-mode ()
-;                                 (interactive)
-;                                 (when (projectile-project-p)
-;                                   (intero-mode)
-;                                   (flycheck-mode))))
+  ;; (add-hook 'haskell-mode-hook (defun haskell-project-mode ()
+  ;;                                (interactive)
+  ;;                                (when (projectile-project-p)
+  ;;                                  (intero-mode)
+  ;;                                  (flycheck-mode))))
 
   :config
   (defun haskell-mode-before-save-handler ()
@@ -265,10 +279,9 @@
 ;;  :init (setq github-browse-file-show-line-at-point t))
 
 
-
-;(use-package intero
-;  :ensure
-;  :defer 3)
+;;(use-package intero
+;;  :ensure
+;;  :defer 3)
 
 
 (setq darwin-p  (eq system-type 'darwin)
@@ -288,41 +301,80 @@
       nt-p      (eq system-type 'windows-nt)
       meadow-p  (featurep 'meadow)
       windows-p (or cygwin-p nt-p meadow-p))
-(when darwin-p
-  (setq mac-right-option-modifier 'hyper)
-  (setq ns-right-option-modifier 'hyper)
-  ;;  (setq mac-command-modifier 'meta) ; make cmd key do Meta
-  ;;  (setq mac-option-modifier 'hyper) ; make opt key do Hyper
-  ;;  (setq mac-control-modifier 'control) ; make Control key do Control
-  ;;  (setq ns-function-modifier 'super)  ; make Fn key do Supr
-  )
+
+(when (and darwin-p ns-p)
+  (progn
+    (add-to-list 'default-frame-alist
+		 '(font . "-*-Menlo-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
+    ;; (setq mac-left-option-modifier 'meta
+    ;; 	  mac-left-command-modifier 'meta
+    ;; 	  mac-right-command-modifier 'super
+    ;; 	  mac-right-option-modifier 'hyper )
+    (setq ns-alternate-modifier 'meta
+	  ns-command-modifier 'meta     
+	  ns-right-command-modifier 'super
+	  ns-right-alternate-modifier 'hyper
+    )))
+
+
 
 ;(use-package helm-migemo
 ;; :ensure t)
 (use-package helm-swoop
   :ensure
-  :defer
+  :defer 5
+  :config
+  (global-set-key (kbd "\C-s") #'helm-swoop)
   )
 
 (use-package avy
   :ensure)
 
-(use-package ace-isearch
-  :ensure
-  :config
-  (global-ace-isearch-mode 1)
-  (setq ace-isearch-function #'avy-goto-char)
-  )
+;(use-package ivy
+;  :ensure)
 
-(use-package programmer-dvorak
-  :ensure
-  :config
-  (set-input-method 'programmer-dvorak)
-  )
+;(use-package ace-isearch
+;  :ensure
+;  :config
+;  (global-ace-isearch-mode 1)
+;  (setq ace-isearch-function #'avy-goto-char)
+;  )
 
+;;(use-package programmer-dvorak
+;;  :ensure
+;;  :config
+;;  (set-input-method 'programmer-dvorak)
+;;  )
+(use-package yw-dvroak
+  :load-path "site-lisp"
+  :defer 10)
+
+(use-package volatile-highlights
+  :ensure
+  :defer 10
+  :config
+  (volatile-highlights-mode)
+  )
+;; (use-package key-chord
+;;   :ensure
+;;   :defer 10
+;;   :config
+;; ;;  (setq key-chord-two-keys-delay 0.5)
+;; ;;  (key-chord-define-global "gl" #'goto-line)
+;; ;;  (key-chord-define-global "fj" #'goto-line)  
+;; ) 
 (use-package z3-mode
   :ensure
   :defer 10)
+
+
+;;(use-package ssh
+;;  :ensure
+;;  :defer 10)
+;;(use-package ssh-tunnels
+;;  :ensure
+;;  :defer 10)
+	    
 
 ;; (use-package ace-jump-mode
 ;; 	     :ensure t
@@ -353,7 +405,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (z3-mode z3 jdee mu4e offlineimap helm-ls-git malabar-mode helm-migemo use-package smartparens rainbow-delimiters projectile programmer-dvorak paredit-everywhere open-junk-file multiple-cursors magit haskell-mode diminish bind-key ace-isearch))))
+    (intero dired+ key-chord volatile-highlights helm-projectile ivy ssh-tunnels ssh z3-mode z3 jdee mu4e offlineimap helm-ls-git malabar-mode helm-migemo use-package smartparens rainbow-delimiters projectile programmer-dvorak paredit-everywhere open-junk-file multiple-cursors magit haskell-mode diminish bind-key ace-isearch))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
