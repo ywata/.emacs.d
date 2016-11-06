@@ -207,10 +207,14 @@
 ;(use-package )
 
 
-;;(use-package jdee
-;;  :ensure
-;;  :defer 3
-;;  )
+(use-package jdee
+  :ensure
+  :defer 3
+  :config
+  (setq jdee-server-dir "~/work/jdee-server/target/"
+	jdee-maven-program "/usr/local/bin/mvn"))
+
+  
 
 (use-package haskell-mode
   :ensure
