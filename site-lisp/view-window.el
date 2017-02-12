@@ -739,7 +739,7 @@ for determining performing sit-for or not."
 
 (defun view-window-buffer-p (buffer)
   (let ((buffer-name (buffer-name buffer)))
-    (if (string-match "\\*" buffer-name)
+    (if (or (string-match "\\*" buffer-name) (string-match " " buffer-name))
 	t
       nil)))
 
