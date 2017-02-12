@@ -26,7 +26,7 @@
 ;; Emacs configuration of Yasu based on Anler Hp's configuration.
 
 ;;
-(setq debug-on-error t)
+(setq debug-on-error nil)
 
 (setq exec-path (append exec-path '("/usr/local/bin")))
 
@@ -37,20 +37,29 @@
 (define-key global-map "\C-j" 'scroll-down)
 (define-key global-map "\C-o" 'scroll-down)
 
-(define-prefix-command 'ctl-Q-keymap)
-(global-set-key (kbd "C-q") 'ctl-Q-keymap)
-(define-key ctl-Q-keymap (kbd "\C-d") 'view-window-mode)
-;;(define-key ctl-Q-keymap (kbd "\C-e") 'eval-last-sexp)
-(define-key ctl-Q-keymap (kbd "\C-e") 'next-error)
-(define-key ctl-Q-keymap (kbd "\C-n") 'view-window-next-buffer)
-(define-key ctl-Q-keymap (kbd "\C-p") 'view-window-prev-buffer)
-(define-key ctl-Q-keymap (kbd "\C-s") 'helm-swoop)
-;(define-key ctl-Q-keymap (kbd "s") 'avy-isearch)
-(define-key ctl-Q-keymap (kbd "\C-w") 'whitespace-mode)
+(if t
+    (progn
+      (define-prefix-command 'ctl-Q-keymap)
+      (global-set-key (kbd "C-q") 'ctl-Q-keymap)
+      (define-key ctl-Q-keymap (kbd "\C-d") 'view-window-mode)
+      ;;(define-key ctl-Q-keymap (kbd "\C-e") 'eval-last-sexp)
+      (define-key ctl-Q-keymap (kbd "\C-e") 'next-error)
+      (define-key ctl-Q-keymap (kbd "\C-n") 'view-window-next-buffer)
+      (define-key ctl-Q-keymap (kbd "\C-p") 'view-window-prev-buffer)
+      (define-key ctl-Q-keymap (kbd "\C-s") 'helm-swoop)
+					;(define-key ctl-Q-keymap (kbd "s") 'avy-isearch)
+      (define-key ctl-Q-keymap (kbd "\C-w") 'whitespace-mode))
+  (progn
+    ))
+
 
 (when (window-system)
-  (dolist (key '("\C-z"))
-	       (global-unset-key key)))
+  (progn
+    (dolist (key '("\C-z"))
+      (global-unset-key key))
+    (menu-bar-mode 1)
+    (tool-bar-mode -1)))
+
 
 (setq linum-delay t)
 (defadvice linum-schedule (around my-linum-schedule () activate)
@@ -79,6 +88,11 @@
 
 
 (require 'use-package)
+(use-package ox-gfm
+  :ensure)
+(use-package ox-qmd
+  :ensure)
+
 
 (use-package view-window
   :load-path "site-lisp"
@@ -96,7 +110,11 @@
   :ensure
   :demand
   :config
-  (add-hook 'haskell-mode-hook #'smartparens-mode))
+  (add-hook 'haskell-mode-hook #'smartparens-mode)
+  (add-hook 'elm-mode-hook     #'smartparens-mode)
+  (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)  
+  (add-hook 'idris-mode        #'smartparens-mode)
+  )
 
 (use-package rainbow-delimiters
   :ensure
@@ -104,13 +122,15 @@
   :config
   (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'elm-mode-hook     #'smartparens-mode)  
+  (add-hook 'idris-mode        #'smartparens-mode)  
   )
 
 (use-package open-junk-file
   :ensure)
 
 (use-package paredit-everywhere
-  :ensure 
+  :ensure
   :config
 ;;  (add-hook 'haskell-mode-hook #'paredit-everywhere-mode)
   )
@@ -134,7 +154,7 @@
   :ensure
   :config
   (add-hook 'haskell-mode-hook #'projectile-mode)
-  (add-hook 'jdee-mode-hook    #'projectile-mode)
+;  (add-hook 'jdee-mode-hook    #'projectile-mode)
   )
 
 ;;(use-package malabar-mode
@@ -159,8 +179,13 @@
 ;;   :init
 ;;   (add-to-list 'load-path "~/.local/bin")
 ;;   (add-hook 'haskell-mode-hook #'hindent-mode))
-  
 
+
+(use-package which-key
+  :ensure
+  :config
+  (which-key-mode 1)
+  (which-key-setup-side-window-bottom))
 
 (use-package helm
   :ensure
@@ -197,50 +222,71 @@
 (use-package dired+
   :ensure)
 
-(use-package mu4e
-  :load-path "site-lisp/mu/mu4e"
-  
-  )
+(use-package isearch+
+  :ensure)
+
+;;(use-package mu4e
+;;  :load-path "site-lisp/mu/mu4e")
+
 ;(use-package offlineimap
 ;  :ensure
 ;  :defer 3)
 ;(use-package )
 
 
-(use-package jdee
+;; (use-package jdee
+;;   :ensure
+;;   :defer 3
+;;   :config
+;;   (setq jdee-server-dir "~/work/jdee-server/target/"
+;; 	jdee-maven-program "/usr/local/bin/mvn"))
+
+(use-package meghanada
   :ensure
-  :defer 3
   :config
-  (setq jdee-server-dir "~/work/jdee-server/target/"
-	jdee-maven-program "/usr/local/bin/mvn"))
+  (add-hook 'java-mode-hook
+	    (lambda ()
+	      ;; meghanada-mode on
+	      (meghanada-mode t)
+	      (add-hook 'before-save-hook 'delete-trailing-whitespace))))
+
+(load-file (let ((coding-system-for-read 'utf-8))
+                (shell-command-to-string "agda-mode locate")))
+
+(use-package agda2-mode
+  :load-path "site-lisp/agda-mode")
+(use-package proof-site
+  :load-path "site-lisp/PG/generic")
+(use-package company-coq
+  :ensure
+  :defer 20)
 
   
 
+
+(use-package idris-mode
+  :ensure)
+(use-package helm-idris
+  :ensure)
+(use-package elm-mode
+  :ensure
+  :mode "\\.elm")
+(use-package elm-yasnippets
+  :ensure)
+
+
 (use-package haskell-mode
   :ensure
-  :mode "\\.hs\\'"
-  :bind (:map haskell-mode-map
-              ("C-c C-," . haskell-move-nested-left)
-              ("C-c C-." . haskell-move-nested-right)
-              ("C-c C-." . haskell-mode-format-imports)
-
-              ("C-c i" . haskell-navigate-imports)
-
-              ("C-c C-l" . haskell-process-load-file)
-              ("C-c C-j" . haskell-interactive-bring)
-              ("C-c C-t" . haskell-process-do-type)
-              ("C-c C-i" . haskell-process-do-info)
-              ("C-c C-c" . haskell-process-cabal-build)
-              ("C-c C-k" . haskell-interactive-mode-clear)
-              ("C-c c"   . haskell-process-cabal))
+  :mode "\\.hs"
   :init
   (add-hook 'haskell-mode-hook 'haskell-doc-mode)
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-  ;; (add-hook 'haskell-mode-hook (defun haskell-project-mode ()
-  ;;                                (interactive)
-  ;;                                (when (projectile-project-p)
-  ;;                                  (intero-mode)
-  ;;                                  (flycheck-mode))))
+  (add-hook 'haskell-mode-hook (defun haskell-project-mode ()
+                                  (interactive)
+                                  (when (projectile-project-p)
+                                    (intero-mode)
+                                    (flycheck-mode))))
 
   :config
   (defun haskell-mode-before-save-handler ()
@@ -250,6 +296,8 @@
       ;(haskell-mode-stylish-buffer)
       )))
 
+(use-package haskell-snippets
+  :ensure)
 (use-package subword
   :defer 3
   :diminish subword-mode
@@ -267,6 +315,11 @@
   :config
   (setenv "GIT_PAGER" ""))
 
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-n") #'company-select-next-or-abort)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous-or-abort))
 
 ;;(use-package git-messenger
 ;  :ensure t
@@ -283,43 +336,9 @@
 ;;  :init (setq github-browse-file-show-line-at-point t))
 
 
-;;(use-package intero
-;;  :ensure
-;;  :defer 3)
-
-
-(setq darwin-p  (eq system-type 'darwin)
-      ns-p      (eq window-system 'ns)
-      carbon-p  (eq window-system 'mac)
-      linux-p   (eq system-type 'gnu/linux)
-      colinux-p (when linux-p
-		  (let ((file "/proc/modules"))
-		    (and
-		     (file-readable-p file)
-		     (x->bool
-		      (with-temp-buffer
-			(insert-file-contents file)
-			(goto-char (point-min))
-			(re-search-forward "^cofuse\.+" nil t))))))
-      cygwin-p  (eq system-type 'cygwin)
-      nt-p      (eq system-type 'windows-nt)
-      meadow-p  (featurep 'meadow)
-      windows-p (or cygwin-p nt-p meadow-p))
-
-(when (and darwin-p ns-p)
-  (progn
-    (add-to-list 'default-frame-alist
-		 '(font . "-*-Menlo-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
-    ;; (setq mac-left-option-modifier 'meta
-    ;; 	  mac-left-command-modifier 'meta
-    ;; 	  mac-right-command-modifier 'super
-    ;; 	  mac-right-option-modifier 'hyper )
-    (setq ns-alternate-modifier 'meta
-	  ns-command-modifier 'meta     
-	  ns-right-command-modifier 'super
-	  ns-right-alternate-modifier 'hyper
-    )))
-
+(use-package intero
+  :ensure
+  :defer 3)
 
 
 ;(use-package helm-migemo
@@ -328,7 +347,6 @@
   :ensure
   :defer 5
   :config
-  (global-set-key (kbd "\C-s") #'helm-swoop)
   )
 
 (use-package avy
@@ -357,20 +375,30 @@
   :ensure
   :defer 10
   :config
-  (volatile-highlights-mode)
-  )
+  (volatile-highlights-mode))
+
+(use-package highlight-symbol
+  :ensure
+  :defer 10
+  :bind (("C-q C-w" . highlight-symbol-at-point))
+  :config
+  (add-hook 'haskell-mode-hook #'highlight-symbol-mode))
+
 ;; (use-package key-chord
 ;;   :ensure
 ;;   :defer 10
 ;;   :config
 ;; ;;  (setq key-chord-two-keys-delay 0.5)
 ;; ;;  (key-chord-define-global "gl" #'goto-line)
-;; ;;  (key-chord-define-global "fj" #'goto-line)  
-;; ) 
+;; ;;  (key-chord-define-global "fj" #'goto-line)
+;; )
 (use-package z3-mode
   :ensure
   :defer 10)
 
+;;(use-package plantuml-mode
+;;  :ensure
+;;  :defer 10)
 
 ;;(use-package ssh
 ;;  :ensure
@@ -378,7 +406,15 @@
 ;;(use-package ssh-tunnels
 ;;  :ensure
 ;;  :defer 10)
-	    
+
+;;(use-package ox-textile
+;;  :ensure
+;;  :defer 30)
+
+;;(use-package typit
+;;  :ensure
+;;  :defer 30)
+
 
 ;; (use-package ace-jump-mode
 ;; 	     :ensure t
@@ -386,7 +422,7 @@
 ;; 	     (require 'cl)
 ;; 	     (add-hook 'haskell-mode-hook #'ace-jump-mode)
 ;; 	     (add-hook 'emacs-mode-hook #'ace-jump-mode)
-	     
+
 ;; 	     (defun add-keys-to-ace-jump-mode (prefix c &optional mode)
 ;; 	       (define-key global-map
 ;; 		 (read-kbd-macro (concat prefix (string c)))
@@ -395,24 +431,54 @@
 ;; 		    (funcall (if (eq ',mode 'word)
 ;; 				 #'ace-jump-word-mode
 ;; 			       #'ace-jump-char-mode) ,c))))
-	     
+
 ;; 	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-" c))
 ;; 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-" c))
 ;; 	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
 ;; 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
 
+(setq darwin-p  (eq system-type 'darwin)
+      ns-p      (eq window-system 'ns)
+      mac-p  (eq window-system 'mac)
+      linux-p   (eq system-type 'gnu/linux)
+      colinux-p (when linux-p
+		  (let ((file "/proc/modules"))
+		    (and
+		     (file-readable-p file)
+		     (x->bool
+		      (with-temp-buffer
+			(insert-file-contents file)
+			(goto-char (point-min))
+			(re-search-forward "^cofuse\.+" nil t))))))
+      cygwin-p  (eq system-type 'cygwin)
+      nt-p      (eq system-type 'windows-nt)
+      meadow-p  (featurep 'meadow)
+      windows-p (or cygwin-p nt-p meadow-p))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (intero dired+ key-chord volatile-highlights helm-projectile ivy ssh-tunnels ssh z3-mode z3 jdee mu4e offlineimap helm-ls-git malabar-mode helm-migemo use-package smartparens rainbow-delimiters projectile programmer-dvorak paredit-everywhere open-junk-file multiple-cursors magit haskell-mode diminish bind-key ace-isearch))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(when (and darwin-p (or ns-p mac-p))
+  (progn
+    (add-to-list 'default-frame-alist
+		 '(font . "-*-Menlo-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
+    (add-to-list 'default-frame-alist '(width . 130))
+    (add-to-list 'default-frame-alist '(height . 44))
+    (add-to-list 'default-frame-alist '(top . 0))
+    (add-to-list 'default-frame-alist '(left . 0))
+    
+    ;; (setq mac-left-option-modifier 'meta
+    ;; 	  mac-left-command-modifier 'meta
+    ;; 	  mac-right-command-modifier 'super
+    ;; 	  mac-right-option-modifier 'hyper )
+    (setq ns-alternate-modifier 'meta
+	  ns-command-modifier 'meta
+	  ns-right-command-modifier 'super
+	  ns-right-alternate-modifier 'hyper
+    )))
+(when mac-p
+  (progn
+    (mac-auto-ascii-mode 1)
+    (x-focus-frame nil)
+))
+
+
+
+
