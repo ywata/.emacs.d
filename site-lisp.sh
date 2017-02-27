@@ -10,7 +10,14 @@ PG=${SITE_LISP}/PG
 git clone https://github.com/ProofGeneral/PG ${PG}
 cd ${PG}
 make clean
-make EMACS=/Applications/Emacs.app/Contents/MacOS/Emacs
+
+OS=`uname `
+case $OS in
+  "Darwin")
+     make EMACS=/Applications/Emacs.app/Contents/MacOS/Emacs;;
+  *)
+     make
+esac
 
 if [ $? -gt 0 ];then
     echo "Install Proof General failed"
