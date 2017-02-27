@@ -95,7 +95,7 @@
 
 
 (use-package view-window
-  :load-path "site-lisp"
+  :load-path "site-lisp/view-window"
   :demand)
 
 (use-package whitespace
@@ -282,11 +282,12 @@
   (add-hook 'haskell-mode-hook 'haskell-doc-mode)
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-  (add-hook 'haskell-mode-hook (defun haskell-project-mode ()
-                                  (interactive)
-                                  (when (projectile-project-p)
-                                    (intero-mode)
-                                    (flycheck-mode))))
+;  (add-hook 'haskell-mode-hook
+;	    (defun haskell-project-mode ()
+;	      (interactive)
+;	      (when (projectile-project-p)
+;		(intero-mode)
+;		(flycheck-mode))))
 
   :config
   (defun haskell-mode-before-save-handler ()
@@ -384,6 +385,9 @@
   :config
   (add-hook 'haskell-mode-hook #'highlight-symbol-mode))
 
+;;(use-package live-code-talks
+;;  :ensure)
+
 ;; (use-package key-chord
 ;;   :ensure
 ;;   :defer 10
@@ -437,7 +441,9 @@
 ;; 	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
 ;; 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
 
-(setq darwin-p  (eq system-type 'darwin)
+(setq x->bool (lambda (elt) (not (not elt)))
+      darwin-p  (eq system-type 'darwin)
+      
       ns-p      (eq window-system 'ns)
       mac-p  (eq window-system 'mac)
       linux-p   (eq system-type 'gnu/linux)
@@ -478,7 +484,5 @@
     (mac-auto-ascii-mode 1)
     (x-focus-frame nil)
 ))
-
-
 
 
