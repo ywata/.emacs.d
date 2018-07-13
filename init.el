@@ -29,8 +29,10 @@
 (setq debug-on-error nil)
 
 (setq exec-path (append exec-path '("/usr/local/bin")))
+(setq exec-path (append exec-path '("/Users/ywata/.local/bin")))
 
 
+(setq redisplay-dont-pause nil)
 
 (setq backup-inhibited t)
 (define-key global-map "\C-h" 'delete-backward-char)
@@ -47,13 +49,13 @@
       (define-key ctl-Q-keymap (kbd "\C-n") 'view-window-next-buffer)
       (define-key ctl-Q-keymap (kbd "\C-p") 'view-window-prev-buffer)
       (define-key ctl-Q-keymap (kbd "\C-s") 'helm-swoop)
-					;(define-key ctl-Q-keymap (kbd "s") 'avy-isearch)
+      (define-key ctl-Q-keymap (kbd "s") 'avy-isearch)
       (define-key ctl-Q-keymap (kbd "\C-w") 'whitespace-mode))
   (progn
     ))
 
 
-(when (window-system)
+(when (fboundp 'window-system)
   (progn
     (dolist (key '("\C-z"))
       (global-unset-key key))
@@ -93,6 +95,12 @@
 (use-package ox-qmd
   :ensure)
 
+(use-package org-sticky-header
+  :ensure)
+;(use-package org-recent-headings
+;  :ensure)
+(use-package helm-org-rifle
+  :ensure)
 
 (use-package view-window
   :load-path "site-lisp/view-window"
@@ -112,7 +120,7 @@
   :config
   (add-hook 'haskell-mode-hook #'smartparens-mode)
   (add-hook 'elm-mode-hook     #'smartparens-mode)
-  (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)  
+  (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'idris-mode        #'smartparens-mode)
   )
 
@@ -122,8 +130,8 @@
   :config
   (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'elm-mode-hook     #'smartparens-mode)  
-  (add-hook 'idris-mode        #'smartparens-mode)  
+  (add-hook 'elm-mode-hook     #'smartparens-mode)
+  (add-hook 'idris-mode        #'smartparens-mode)
   )
 
 (use-package open-junk-file
@@ -162,12 +170,12 @@
 
 (use-package multiple-cursors
   :ensure
-  :defer 10
+  :config
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
          ("C-M->" . mc/skip-to-next-like-this)
          ("C-M-<" . mc/skip-to-previous-like-this)
-         ("C-S-c C-S-c" . mc/edit-lines)
+         ("C-S-c" . mc/edit-lines)
          ("C-M-0" . mc/mark-all-like-this)
          ("M-<down-mouse-1>" . mc/add-cursor-on-click)))
 
@@ -187,28 +195,29 @@
   (which-key-mode 1)
   (which-key-setup-side-window-bottom))
 
-(use-package helm
-  :ensure
-  :config
-  (helm-mode 1)
-  (define-key global-map (kbd "M-x")     'helm-M-x)
-  (define-key global-map (kbd "C-x C-f") 'helm-find-files)
-  (define-key global-map (kbd "C-x C-r") 'helm-recentf)
-  (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
-  (define-key global-map (kbd "C-c i")   'helm-imenu)
-  (define-key global-map (kbd "C-x b")   'helm-buffers-list)
-  (define-key global-map (kbd "M-r")     'helm-resume)
-  (define-key global-map (kbd "C-M-h")   'helm-apropos)
-  (define-key helm-map (kbd "C-h") 'delete-backward-char)
-  (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
-  (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
-  (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
-  )
+ (use-package helm
+   :ensure
+   :config
+   (helm-mode 1)
+   (define-key global-map (kbd "M-x")     'helm-M-x)
+   (define-key global-map (kbd "C-x C-f") 'helm-find-files)
+   (define-key global-map (kbd "C-x C-r") 'helm-recentf)
+   (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
+   (define-key global-map (kbd "C-c i")   'helm-imenu)
+   (define-key global-map (kbd "C-x b")   'helm-buffers-list)
+   (define-key global-map (kbd "M-r")     'helm-resume)
+   (define-key global-map (kbd "C-M-h")   'helm-apropos)
+   (define-key helm-map (kbd "C-h") 'delete-backward-char)
+   (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
+   (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
+   (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+   (setq helm-ff-newfile-prompt-p nil)
+   )
 (use-package helm-ls-git
   :ensure
   :defer 3
   :bind
-  ("C-q C-l" . helm-ls-git-ls)
+  (("C-q C-l" . helm-ls-git-ls))
   :config
   (global-set-key (kbd "C-x C-d") #'helm-browse-project)
   )
@@ -219,11 +228,9 @@
   :config
   (helm-projectile-on))
 
-(use-package dired+
-  :ensure)
 
-(use-package isearch+
-  :ensure)
+;;(use-package isearch+
+;;  :ensure)
 
 ;;(use-package mu4e
 ;;  :load-path "site-lisp/mu/mu4e")
@@ -241,6 +248,10 @@
 ;;   (setq jdee-server-dir "~/work/jdee-server/target/"
 ;; 	jdee-maven-program "/usr/local/bin/mvn"))
 
+
+(use-package indium
+  :ensure)
+
 (use-package meghanada
   :ensure
   :config
@@ -250,18 +261,31 @@
 	      (meghanada-mode t)
 	      (add-hook 'before-save-hook 'delete-trailing-whitespace))))
 
-(load-file (let ((coding-system-for-read 'utf-8))
-                (shell-command-to-string "agda-mode locate")))
 
+;(load-file (let ((coding-system-for-read 'utf-8))
+;                (shell-command-to-string "agda-mode locate")))
 (use-package agda2-mode
   :load-path "site-lisp/agda-mode")
+
+
 (use-package proof-site
-  :load-path "site-lisp/PG/generic")
+  :load-path "site-lisp/PG/generic"
+  :config
+  (setq coq-prog-name "/Users/ywata/.opam//4.05.0/bin/coqtop")
+;  (setq coq-prog-args
+;	'((cons "-R" (cons "/Users/ywata/.opam//4.05.0/lib/coq/user-contrib/mathcomp" (cons "mathcomp")))))
+
+;  (setq coq-prog-args '("-R" "/Users/ywata/.opam//4.05.0/lib/coq/user-contrib/mathcomp" "mathcomp" "-emacs"))
+	
+  (setq coq-indent-proofstart 0)
+  (setq coq-indent-modulestart 0))
+
+
+(load "pg-ssr.el")
 (use-package company-coq
   :ensure
   :defer 20)
 
-  
 
 
 (use-package idris-mode
@@ -274,14 +298,20 @@
 (use-package elm-yasnippets
   :ensure)
 
+(use-package intero
+  :ensure
+  :defer 3)
 
 (use-package haskell-mode
   :ensure
   :mode "\\.hs"
   :init
   (add-hook 'haskell-mode-hook 'haskell-doc-mode)
-  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+;  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+  (add-hook 'haskell-mode-hook 'show-paren-mode)
+;  (add-hook 'haskell-mode-hook 'haskell-indent-mode)
+;  (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+  (add-hook 'haskell-mode-hook 'intero-mode)
 ;  (add-hook 'haskell-mode-hook
 ;	    (defun haskell-project-mode ()
 ;	      (interactive)
@@ -289,13 +319,14 @@
 ;		(intero-mode)
 ;		(flycheck-mode))))
 
-  :config
-  (defun haskell-mode-before-save-handler ()
-    "Function that will be called before buffer's saving."
-    (when (projectile-project-p)
-      (haskell-sort-imports)
-      ;(haskell-mode-stylish-buffer)
-      )))
+;  :config
+;  (defun haskell-mode-before-save-handler ()
+;    "Function that will be called before buffer's saving."
+;    (when (projectile-project-p)
+;      ;(haskell-sort-imports)
+;      ;(haskell-mode-stylish-buffer)
+;      ))
+  )
 
 (use-package haskell-snippets
   :ensure)
@@ -306,15 +337,14 @@
   (add-hook 'haskell-mode-hook 'subword-mode))
 
 
-(use-package magit
-  :ensure
-  :defer 3
-  :if (display-graphic-p)
-  :init
-  (add-hook 'magit-mode-hook 'hl-line-mode)
-
-  :config
-  (setenv "GIT_PAGER" ""))
+;(use-package magit
+;  :ensure
+;  :defer 3
+;  :if (display-graphic-p)
+;  :init
+;  (add-hook 'magit-mode-hook 'hl-line-mode)
+;  :config
+;  (setenv "GIT_PAGER" ""))
 
 (with-eval-after-load 'company
   (define-key company-active-map (kbd "M-n") nil)
@@ -337,11 +367,6 @@
 ;;  :init (setq github-browse-file-show-line-at-point t))
 
 
-(use-package intero
-  :ensure
-  :defer 3)
-
-
 ;(use-package helm-migemo
 ;; :ensure t)
 (use-package helm-swoop
@@ -350,8 +375,8 @@
   :config
   )
 
-(use-package avy
-  :ensure)
+;(use-package avy
+;  :ensure)
 
 ;(use-package ivy
 ;  :ensure)
@@ -443,7 +468,7 @@
 
 (setq x->bool (lambda (elt) (not (not elt)))
       darwin-p  (eq system-type 'darwin)
-      
+
       ns-p      (eq window-system 'ns)
       mac-p  (eq window-system 'mac)
       linux-p   (eq system-type 'gnu/linux)
@@ -464,12 +489,12 @@
 (when (and darwin-p (or ns-p mac-p))
   (progn
     (add-to-list 'default-frame-alist
-		 '(font . "-*-Menlo-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
-    (add-to-list 'default-frame-alist '(width . 130))
-    (add-to-list 'default-frame-alist '(height . 44))
+ 		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
+    (add-to-list 'default-frame-alist '(width . 140))
+    (add-to-list 'default-frame-alist '(height . 50))
     (add-to-list 'default-frame-alist '(top . 0))
     (add-to-list 'default-frame-alist '(left . 0))
-    
+
     ;; (setq mac-left-option-modifier 'meta
     ;; 	  mac-left-command-modifier 'meta
     ;; 	  mac-right-command-modifier 'super
@@ -484,5 +509,9 @@
     (mac-auto-ascii-mode 1)
     (x-focus-frame nil)
 ))
+
+(if (boundp 'mouse-wheel-tilt-scroll)
+    (setq mouse-wheel-tilt-scroll t))
+
 
 
