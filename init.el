@@ -43,14 +43,15 @@
     (progn
       (define-prefix-command 'ctl-Q-keymap)
       (global-set-key (kbd "C-q") 'ctl-Q-keymap)
-      (define-key ctl-Q-keymap (kbd "\C-d") 'view-window-mode)
-      ;;(define-key ctl-Q-keymap (kbd "\C-e") 'eval-last-sexp)
-      (define-key ctl-Q-keymap (kbd "\C-e") 'next-error)
-      (define-key ctl-Q-keymap (kbd "\C-n") 'view-window-next-buffer)
-      (define-key ctl-Q-keymap (kbd "\C-p") 'view-window-prev-buffer)
-      (define-key ctl-Q-keymap (kbd "\C-s") 'helm-swoop)
-      (define-key ctl-Q-keymap (kbd "s") 'avy-isearch)
-      (define-key ctl-Q-keymap (kbd "\C-w") 'whitespace-mode))
+      (define-key ctl-Q-keymap (kbd "\C-d") #'view-window-mode)
+      ;;(define-key ctl-Q-keymap (kbd "\C-e") #'eval-last-sexp)
+      (define-key ctl-Q-keymap (kbd "\C-e") #'next-error)
+      (define-key ctl-Q-keymap (kbd "\C-n") #'view-window-next-buffer)
+      (define-key ctl-Q-keymap (kbd "\C-p") #'view-window-prev-buffer)
+      (define-key ctl-Q-keymap (kbd "\C-s") #'helm-swoop)
+      (define-key ctl-Q-keymap (kbd "s") #'avy-isearch)
+      (define-key ctl-Q-keymap (kbd "\C-s") #'whitespace-mode)
+      )
   (progn
     ))
 
