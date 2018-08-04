@@ -329,6 +329,13 @@
 ;      ))
   )
 
+(use-package flycheck-haskell
+  :ensure
+  :init
+  (flycheck-add-next-checker 'intero '(warning . haskell-hlint))
+  (add-hook 'haskell-mode-hook #'flycheck-haskell-setup))
+
+
 (use-package haskell-snippets
   :ensure)
 (use-package subword
