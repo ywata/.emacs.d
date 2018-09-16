@@ -107,6 +107,11 @@
   :load-path "site-lisp/view-window"
   :demand)
 
+;(use-package eaw
+;  :load-path "site-lisp/eaw"
+;  :init (eaw-fullwidth)
+;  :ensure)
+
 (use-package whitespace
   :load-path "site-lisp"
   :demand)
@@ -277,7 +282,8 @@
 ;	'((cons "-R" (cons "/Users/ywata/.opam//4.05.0/lib/coq/user-contrib/mathcomp" (cons "mathcomp")))))
 
 ;  (setq coq-prog-args '("-R" "/Users/ywata/.opam//4.05.0/lib/coq/user-contrib/mathcomp" "mathcomp" "-emacs"))
-	
+  (define-key coq-mode-map (kbd "<left>") 'proof-undo-last-successful-command)
+  (define-key coq-mode-map (kbd "<right>") 'proof-assert-next-command-interactive)
   (setq coq-indent-proofstart 0)
   (setq coq-indent-modulestart 0))
 
@@ -331,8 +337,9 @@
 
 (use-package flycheck-haskell
   :ensure
-  :init
-  (flycheck-add-next-checker 'intero '(warning . haskell-hlint))
+  :config
+  (with-eval-after-load 'intero
+    (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
   (add-hook 'haskell-mode-hook #'flycheck-haskell-setup))
 
 
@@ -503,10 +510,6 @@
     (add-to-list 'default-frame-alist '(top . 0))
     (add-to-list 'default-frame-alist '(left . 0))
 
-    ;; (setq mac-left-option-modifier 'meta
-    ;; 	  mac-left-command-modifier 'meta
-    ;; 	  mac-right-command-modifier 'super
-    ;; 	  mac-right-option-modifier 'hyper )
     (setq ns-alternate-modifier 'meta
 	  ns-command-modifier 'meta
 	  ns-right-command-modifier 'super
@@ -522,4 +525,4 @@
     (setq mouse-wheel-tilt-scroll t))
 
 
-
+;;;;;;;;
