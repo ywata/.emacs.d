@@ -143,6 +143,9 @@
 (use-package open-junk-file
   :ensure)
 
+(use-package lean-mode
+  :ensure)
+
 (use-package paredit-everywhere
   :ensure
   :config
@@ -193,6 +196,9 @@
 ;;   :init
 ;;   (add-to-list 'load-path "~/.local/bin")
 ;;   (add-hook 'haskell-mode-hook #'hindent-mode))
+
+(use-package twittering-mode
+  :ensure)
 
 
 (use-package which-key
@@ -273,24 +279,33 @@
 (use-package agda2-mode
   :load-path "site-lisp/agda-mode")
 
+(use-package coq-commenter
+  :ensure)
+(use-package company-coq
+  :ensure)
 
-(use-package proof-site
-  :load-path "site-lisp/PG/generic"
-  :config
+(use-package proof-general
+;  :load-path "site-lisp/PG/generic/"
+  :ensure
+  :bind
+  (("<left>" . proof-undo-last-successful-command)
+   ("<right>" . proof-assert-next-command-interactive)
+;   ("S-<right>" . proot-goto-point)
+   )
+  
+  :init
+  (load "generic/proof-site")
   (setq coq-prog-name "/Users/ywata/.opam//4.05.0/bin/coqtop")
-;  (setq coq-prog-args
-;	'((cons "-R" (cons "/Users/ywata/.opam//4.05.0/lib/coq/user-contrib/mathcomp" (cons "mathcomp")))))
-
-;  (setq coq-prog-args '("-R" "/Users/ywata/.opam//4.05.0/lib/coq/user-contrib/mathcomp" "mathcomp" "-emacs"))
-  (define-key coq-mode-map (kbd "<left>") 'proof-undo-last-successful-command)
-  (define-key coq-mode-map (kbd "<right>") 'proof-assert-next-command-interactive)
   (setq coq-indent-proofstart 0)
-  (setq coq-indent-modulestart 0))
+  (setq coq-indent-modulestart 0)
+  (add-hook 'coq-mode-hook #'company-coq-mode)
+  :config
+  (pretify-symbols-mode nil)
+  )
 
 
 (load "pg-ssr.el")
 (use-package company-coq
-  :ensure
   :defer 20)
 
 
@@ -525,4 +540,4 @@
     (setq mouse-wheel-tilt-scroll t))
 
 
-;;;;;;;;
+;;;;;;;; drop code from here.
