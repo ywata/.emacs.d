@@ -51,6 +51,7 @@
       (define-key ctl-Q-keymap (kbd "\C-s") #'helm-swoop)
       (define-key ctl-Q-keymap (kbd "s") #'avy-isearch)
       (define-key ctl-Q-keymap (kbd "\C-s") #'whitespace-mode)
+      (setq outline-minor-mode-prefix "\C-c\C-q")
       )
   (progn
     ))
@@ -273,16 +274,39 @@
 	      (meghanada-mode t)
 	      (add-hook 'before-save-hook 'delete-trailing-whitespace))))
 
+(use-package agda2-mode
+  :load-path "site-lisp/agda-mode"
+;  :init
+;  (add-hook 'agda2-mode-hook 'deactivate-input-method)
+  )
+
+
+
+;(set-face-attribute 'default nil
+;		    :family "DejaVu Sans Mono"
+;		    :height 120
+;		    :weight 'normal
+;		    :width  'normal)
+
+; fix \:
+(set-fontset-font "fontset-default"
+		  (cons (decode-char 'ucs #x2982)
+			(decode-char 'ucs #x2982))
+		  "STIX")
 
 ;(load-file (let ((coding-system-for-read 'utf-8))
 ;                (shell-command-to-string "agda-mode locate")))
-(use-package agda2-mode
-  :load-path "site-lisp/agda-mode")
+
+
 
 (use-package coq-commenter
   :ensure)
 (use-package company-coq
-  :ensure)
+  :ensure
+  :config
+  (company-coq-features/prettify-symbols 'off)
+  (company-coq-features/smart-subscripts 'off))
+
 
 (use-package proof-general
 ;  :load-path "site-lisp/PG/generic/"
@@ -307,8 +331,6 @@
 (load "pg-ssr.el")
 (use-package company-coq
   :defer 20)
-
-
 
 (use-package idris-mode
   :ensure)
@@ -518,8 +540,10 @@
 
 (when (and darwin-p (or ns-p mac-p))
   (progn
+;    (add-to-list 'default-frame-alist
+; 		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
     (add-to-list 'default-frame-alist
- 		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
+ 		 '(font . "-*-*-*-*-*-*-20-*-*-*-*-*-*-*"))
     (add-to-list 'default-frame-alist '(width . 140))
     (add-to-list 'default-frame-alist '(height . 50))
     (add-to-list 'default-frame-alist '(top . 0))
@@ -541,3 +565,4 @@
 
 
 ;;;;;;;; drop code from here.
+
