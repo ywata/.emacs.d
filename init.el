@@ -27,6 +27,8 @@
 
 ;;
 (setq debug-on-error nil)
+(transient-mark-mode 0) ;; disable transient-mark-mode 
+
 
 (setq exec-path (append exec-path '("/usr/local/bin")))
 (setq exec-path (append exec-path '("/Users/ywata/.local/bin")))
@@ -38,6 +40,11 @@
 (define-key global-map "\C-h" 'delete-backward-char)
 (define-key global-map "\C-j" 'scroll-down)
 (define-key global-map "\C-o" 'scroll-down)
+
+(defun do-nothing ()
+  "Do nothing interactive command to avoid ring bell for key binding."
+  (interactive))
+
 
 (if t
     (progn
@@ -52,6 +59,10 @@
       (define-key ctl-Q-keymap (kbd "s") #'avy-isearch)
       (define-key ctl-Q-keymap (kbd "\C-s") #'whitespace-mode)
       (setq outline-minor-mode-prefix "\C-c\C-q")
+      
+      (define-key global-map (kbd "C-<down-mouse-1>") #'do-nothing)
+      (define-key global-map (kbd "C-<mouse-1>") #'do-nothing)
+      
       )
   (progn
     ))
@@ -75,6 +86,13 @@
 ;;; Code:
 (require 'package)
 
+
+;(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+;                    (not (gnutls-available-p))))
+;       (proto (if no-ssl "http" "https")))
+;  (add-to-list 'package-archives
+;               (cons "melpa" (concat proto "://melpa.org/packages/")) t))
+
 ;(add-to-list 'package-archives
 ;	     '("elpa" . "http://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives
@@ -93,16 +111,20 @@
 
 (require 'use-package)
 (use-package ox-gfm
-  :ensure)
+  :ensure t
+  :defer t)
 (use-package ox-qmd
-  :ensure)
+  :defer t
+  :ensure t)
 
 (use-package org-sticky-header
-  :ensure)
+  :defer t
+  :ensure t)
 ;(use-package org-recent-headings
 ;  :ensure)
 (use-package helm-org-rifle
-  :ensure)
+  :defer t
+  :ensure t)
 
 (use-package view-window
   :load-path "site-lisp/view-window"
@@ -122,7 +144,7 @@
 ;;  :config (benchmark-init/activate))
 
 (use-package smartparens
-  :ensure
+  :ensure t
   :demand
   :config
   (add-hook 'haskell-mode-hook #'smartparens-mode)
@@ -132,7 +154,7 @@
   )
 
 (use-package rainbow-delimiters
-  :ensure
+  :ensure t
   :demand
   :config
   (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode)
@@ -142,13 +164,16 @@
   )
 
 (use-package open-junk-file
-  :ensure)
+  :defer t
+  :ensure t)
 
 (use-package lean-mode
-  :ensure)
+  :defer t
+  :ensure t)
 
 (use-package paredit-everywhere
-  :ensure
+  :defer t
+  :ensure t
   :config
 ;;  (add-hook 'haskell-mode-hook #'paredit-everywhere-mode)
   )
@@ -169,7 +194,8 @@
 
 
 (use-package projectile
-  :ensure
+  :defer t
+  :ensure t
   :config
   (add-hook 'haskell-mode-hook #'projectile-mode)
 ;  (add-hook 'jdee-mode-hook    #'projectile-mode)
@@ -179,7 +205,8 @@
 ;;  :ensure t)
 
 (use-package multiple-cursors
-  :ensure
+  :defer t
+  :ensure t
   :config
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
@@ -191,7 +218,7 @@
 
 
 (use-package term+
-  :defer 10)
+  :defer t)
 ;; (use-package hindent
 ;;   :defer 3
 ;;   :init
@@ -199,36 +226,38 @@
 ;;   (add-hook 'haskell-mode-hook #'hindent-mode))
 
 (use-package twittering-mode
-  :ensure)
+  :defer t
+  :ensure t)
 
 
 (use-package which-key
-  :ensure
+  :defer t
+  :ensure t
   :config
   (which-key-mode 1)
   (which-key-setup-side-window-bottom))
 
- (use-package helm
-   :ensure
-   :config
-   (helm-mode 1)
-   (define-key global-map (kbd "M-x")     'helm-M-x)
-   (define-key global-map (kbd "C-x C-f") 'helm-find-files)
-   (define-key global-map (kbd "C-x C-r") 'helm-recentf)
-   (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
-   (define-key global-map (kbd "C-c i")   'helm-imenu)
-   (define-key global-map (kbd "C-x b")   'helm-buffers-list)
-   (define-key global-map (kbd "M-r")     'helm-resume)
-   (define-key global-map (kbd "C-M-h")   'helm-apropos)
-   (define-key helm-map (kbd "C-h") 'delete-backward-char)
-   (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
-   (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
-   (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
-   (setq helm-ff-newfile-prompt-p nil)
-   )
+(use-package helm
+  :ensure t
+  :config
+  (helm-mode 1)
+  (define-key global-map (kbd "M-x")     'helm-M-x)
+  (define-key global-map (kbd "C-x C-f") 'helm-find-files)
+  (define-key global-map (kbd "C-x C-r") 'helm-recentf)
+  (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
+  (define-key global-map (kbd "C-c i")   'helm-imenu)
+  (define-key global-map (kbd "C-x b")   'helm-buffers-list)
+  (define-key global-map (kbd "M-r")     'helm-resume)
+  (define-key global-map (kbd "C-M-h")   'helm-apropos)
+  (define-key helm-map (kbd "C-h") 'delete-backward-char)
+  (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
+  (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
+  (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+  (setq helm-ff-newfile-prompt-p nil))
+
 (use-package helm-ls-git
-  :ensure
-  :defer 3
+  :ensure t
+  :defer t
   :bind
   (("C-q C-l" . helm-ls-git-ls))
   :config
@@ -236,11 +265,10 @@
   )
 
 (use-package helm-projectile
-  :ensure
-  :defer 5
+  :ensure t
+  :defer t
   :config
   (helm-projectile-on))
-
 
 ;;(use-package isearch+
 ;;  :ensure)
@@ -253,7 +281,6 @@
 ;  :defer 3)
 ;(use-package )
 
-
 ;; (use-package jdee
 ;;   :ensure
 ;;   :defer 3
@@ -262,11 +289,12 @@
 ;; 	jdee-maven-program "/usr/local/bin/mvn"))
 
 
-(use-package indium
-  :ensure)
+;(use-package indium
+;  :ensure)
 
 (use-package meghanada
-  :ensure
+  :ensure t
+  :defer t
   :config
   (add-hook 'java-mode-hook
 	    (lambda ()
@@ -276,17 +304,19 @@
 
 (use-package agda2-mode
   :load-path "site-lisp/agda-mode"
-;  :init
-;  (add-hook 'agda2-mode-hook 'deactivate-input-method)
-  )
+;  :ensure t
+  :config
+  (bind-keys :map agda2-mode-map ("C-c C-p" . agda2-abbrevs-code-block))
+;  (setq agda2-font-name "DejaVu Sans Mono")
+  (load "my-agda2-abbrevs"))
 
 
 
-;(set-face-attribute 'default nil
-;		    :family "DejaVu Sans Mono"
-;		    :height 120
-;		    :weight 'normal
-;		    :width  'normal)
+(set-face-attribute 'default nil
+		    :family "DejaVu Sans Mono"
+		    :height 200     ;20pt
+		    :weight 'normal
+		    :width  'normal)
 
 ; fix \:
 (set-fontset-font "fontset-default"
@@ -298,56 +328,60 @@
 ;                (shell-command-to-string "agda-mode locate")))
 
 
-
 (use-package coq-commenter
-  :ensure)
+  :ensure t
+  :defer t)
+  
 (use-package company-coq
-  :ensure
+  :ensure t
+  :defer t
   :config
   (company-coq-features/prettify-symbols 'off)
   (company-coq-features/smart-subscripts 'off))
 
 
-(use-package proof-general
-;  :load-path "site-lisp/PG/generic/"
-  :ensure
-  :bind
-  (("<left>" . proof-undo-last-successful-command)
-   ("<right>" . proof-assert-next-command-interactive)
+(use-package proof-site
+  :load-path "elpa/proof-general-20181115.1610/generic/"
+;  :config
+;  (("<left>" . proof-undo-last-successful-command)
+;   ("<right>" . proof-assert-next-command-interactive)
 ;   ("S-<right>" . proot-goto-point)
-   )
   
   :init
-  (load "generic/proof-site")
   (setq coq-prog-name "/Users/ywata/.opam//4.05.0/bin/coqtop")
   (setq coq-indent-proofstart 0)
   (setq coq-indent-modulestart 0)
   (add-hook 'coq-mode-hook #'company-coq-mode)
   :config
-  (pretify-symbols-mode nil)
-  )
+  (if (boundp 'pretify-symbols-mode)
+      (pretify-symbols-mode nil)))
+
 
 
 (load "pg-ssr.el")
 (use-package company-coq
-  :defer 20)
+  :defer t)
 
 (use-package idris-mode
-  :ensure)
+  :defer t
+  :ensure t)
 (use-package helm-idris
-  :ensure)
+  :defer t
+  :ensure t)
 (use-package elm-mode
-  :ensure
+  :defer t
+  :ensure t
   :mode "\\.elm")
 (use-package elm-yasnippets
-  :ensure)
+  :defer t
+  :ensure t)
 
 (use-package intero
-  :ensure
+  :ensure t
   :defer 3)
 
 (use-package haskell-mode
-  :ensure
+  :ensure t
   :mode "\\.hs"
   :init
   (add-hook 'haskell-mode-hook 'haskell-doc-mode)
@@ -373,7 +407,7 @@
   )
 
 (use-package flycheck-haskell
-  :ensure
+  :ensure t
   :config
   (with-eval-after-load 'intero
     (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
@@ -381,9 +415,10 @@
 
 
 (use-package haskell-snippets
-  :ensure)
+  :ensure t)
 (use-package subword
-  :defer 3
+  :ensure t
+  :defer t
   :diminish subword-mode
   :init
   (add-hook 'haskell-mode-hook 'subword-mode))
@@ -422,8 +457,7 @@
 ;(use-package helm-migemo
 ;; :ensure t)
 (use-package helm-swoop
-  :ensure
-  :defer 5
+  :ensure t
   :config
   )
 
@@ -450,14 +484,14 @@
   :defer 10)
 
 (use-package volatile-highlights
-  :ensure
-  :defer 10
+  :ensure t
+  :defer t
   :config
   (volatile-highlights-mode))
 
 (use-package highlight-symbol
-  :ensure
-  :defer 10
+  :ensure t
+  :defer t
   :bind (("C-q C-w" . highlight-symbol-at-point))
   :config
   (add-hook 'haskell-mode-hook #'highlight-symbol-mode))
@@ -474,7 +508,8 @@
 ;; ;;  (key-chord-define-global "fj" #'goto-line)
 ;; )
 (use-package z3-mode
-  :ensure
+  :ensure t
+  :defer t
   :defer 10)
 
 ;;(use-package plantuml-mode
@@ -540,10 +575,12 @@
 
 (when (and darwin-p (or ns-p mac-p))
   (progn
+;    (set-fontset-font "fontset-default" nil
+;                      (font-spec :name "DejaVu Sans"))    
 ;    (add-to-list 'default-frame-alist
 ; 		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
-    (add-to-list 'default-frame-alist
- 		 '(font . "-*-*-*-*-*-*-20-*-*-*-*-*-*-*"))
+;    (add-to-list 'default-frame-alist
+; 		 '(font . "-*-*-*-*-*-*-20-*-*-*-*-*-*-*"))
     (add-to-list 'default-frame-alist '(width . 140))
     (add-to-list 'default-frame-alist '(height . 50))
     (add-to-list 'default-frame-alist '(top . 0))
@@ -563,6 +600,6 @@
 (if (boundp 'mouse-wheel-tilt-scroll)
     (setq mouse-wheel-tilt-scroll t))
 
+(put 'downcase-region 'disabled nil)
 
 ;;;;;;;; drop code from here.
-
