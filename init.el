@@ -123,7 +123,6 @@
 ;(use-package org-recent-headings
 ;  :ensure)
 (use-package helm-org-rifle
-  :defer t
   :ensure t)
 
 (use-package view-window
@@ -194,7 +193,6 @@
 
 
 (use-package projectile
-  :defer t
   :ensure t
   :config
   (add-hook 'haskell-mode-hook #'projectile-mode)
@@ -257,7 +255,6 @@
 
 (use-package helm-ls-git
   :ensure t
-  :defer t
   :bind
   (("C-q C-l" . helm-ls-git-ls))
   :config
@@ -266,7 +263,6 @@
 
 (use-package helm-projectile
   :ensure t
-  :defer t
   :config
   (helm-projectile-on))
 
@@ -303,7 +299,7 @@
 	      (add-hook 'before-save-hook 'delete-trailing-whitespace))))
 
 (use-package agda2-mode
-  :load-path "site-lisp/agda-mode"
+  :load-path "site-lisp/agda2-mode"
 ;  :ensure t
   :config
   (bind-keys :map agda2-mode-map ("C-c C-p" . agda2-abbrevs-code-block))
@@ -340,8 +336,17 @@
   (company-coq-features/smart-subscripts 'off))
 
 
-(use-package proof-site
-  :load-path "elpa/proof-general-20181115.1610/generic/"
+(eval-and-compile
+  (defun proof-general-site-load-path ()
+    (shell-command "find ~/.emacs.d/elpa -path ess/lisp")))
+
+;(use-package ess-site
+;  :load-path (lambda () (list (ess-site-load-path)))
+;  :commands R)
+
+(use-package proof-general
+  :ensure t
+;  :load-path "elpa/proof-general-*/generic/"
 ;  :config
 ;  (("<left>" . proof-undo-last-successful-command)
 ;   ("<right>" . proof-assert-next-command-interactive)
