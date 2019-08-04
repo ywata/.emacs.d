@@ -28,18 +28,52 @@
 ;;
 (setq debug-on-error nil)
 (transient-mark-mode 0) ;; disable transient-mark-mode 
-
+(blink-cursor-mode 0)
 
 (setq exec-path (append exec-path '("/usr/local/bin")))
 (setq exec-path (append exec-path '("/Users/ywata/.local/bin")))
 
+(defun set-exec-path-from-shell-PATH ()
+  "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
 
-(setq redisplay-dont-pause nil)
+This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
+  (interactive)
+  (let ((path-from-shell
+	 (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+(set-exec-path-from-shell-PATH)
+
+(let* ((coding-system-for-read 'utf-8)
+       (agda-mode-el (shell-command-to-string "agda-mode locate"))
+       (agda-mode-el- (shell-command-to-string (expand-file-name "~/.local/bin/agda-mode locate"))))
+  (progn (if (file-exists-p agda-mode-el)
+	     (load agda-mode-el)
+	   (if (file-exists-p agda-mode-el-) (load agda-mode-el-)))
+	 (if (boundp 'agda2-mode-map)
+	     (define-key agda2-mode-map (kbd "C-c C-i") #'agda2-insert-commented-region))))
+
+(defun agda2-insert-commented-region ()
+    "insert agda2 goal buffer"
+  (interactive)
+  (if (buffer-live-p agda2-info-buffer)
+      (save-excursion
+	(with-current-buffer agda2-info-buffer
+	  (copy-region-as-kill (point-min) (point-max)))
+	(insert "{-\n")
+	(yank)
+	(insert "-}"))))
+
+
+; flicker(setq redisplay-dont-pause nil)
+(modify-all-frames-parameters '((inhibit-double-buffering . nil)))
+;(setq redisplay-dont-pause nil)
 
 (setq backup-inhibited t)
 (define-key global-map "\C-h" 'delete-backward-char)
 (define-key global-map "\C-j" 'scroll-down)
 (define-key global-map "\C-o" 'scroll-down)
+(define-key global-map "\C-l" #'recenter)
 
 (defun do-nothing ()
   "Do nothing interactive command to avoid ring bell for key binding."
@@ -124,6 +158,10 @@
 ;  :ensure)
 (use-package helm-org-rifle
   :ensure t)
+
+;(use-package my-agda2
+;  :load-path "site-lisp/agda2"
+;  :ensure t)
 
 (use-package view-window
   :load-path "site-lisp/view-window"
@@ -235,9 +273,13 @@
   (which-key-mode 1)
   (which-key-setup-side-window-bottom))
 
+
+
 (use-package helm
   :ensure t
+  :init
   :config
+
   (helm-mode 1)
   (define-key global-map (kbd "M-x")     'helm-M-x)
   (define-key global-map (kbd "C-x C-f") 'helm-find-files)
@@ -251,6 +293,10 @@
   (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
   (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
   (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+  (setq helm-ff-skip-boring-files t)
+  (customize-set-variable 'helm-boring-file-regexp-list (add-to-list 'helm-boring-file-regexp-list "\\.agdai$"))
+;;   (add-to-list 'completion-ignored-extensions ".agdai")  
+
   (setq helm-ff-newfile-prompt-p nil))
 
 (use-package helm-ls-git
@@ -298,13 +344,13 @@
 	      (meghanada-mode t)
 	      (add-hook 'before-save-hook 'delete-trailing-whitespace))))
 
-(use-package agda2-mode
-  :load-path "site-lisp/agda2-mode"
-;  :ensure t
-  :config
-  (bind-keys :map agda2-mode-map ("C-c C-p" . agda2-abbrevs-code-block))
-;  (setq agda2-font-name "DejaVu Sans Mono")
-  (load "my-agda2-abbrevs"))
+;; (use-package agda2-mode
+;;   :load-path "site-lisp/agda2-mode"
+;; ;  :ensure t
+;;   :config
+;;   (bind-keys :map agda2-mode-map ("C-c C-p" . agda2-abbrevs-code-block))
+;; ;  (setq agda2-font-name "DejaVu Sans Mono")
+;;  (load "my-agda2-abbrevs"))
 
 
 
@@ -582,11 +628,11 @@
   (progn
 ;    (set-fontset-font "fontset-default" nil
 ;                      (font-spec :name "DejaVu Sans"))    
-;    (add-to-list 'default-frame-alist
-; 		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
+    (add-to-list 'default-frame-alist
+ 		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
 ;    (add-to-list 'default-frame-alist
 ; 		 '(font . "-*-*-*-*-*-*-20-*-*-*-*-*-*-*"))
-    (add-to-list 'default-frame-alist '(width . 140))
+    (add-to-list 'default-frame-alist '(width . 120))
     (add-to-list 'default-frame-alist '(height . 50))
     (add-to-list 'default-frame-alist '(top . 0))
     (add-to-list 'default-frame-alist '(left . 0))
@@ -607,4 +653,3 @@
 
 (put 'downcase-region 'disabled nil)
 
-;;;;;;;; drop code from here.
