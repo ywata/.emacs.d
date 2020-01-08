@@ -26,43 +26,13 @@
 ;; Emacs configuration of Yasu based on Anler Hp's configuration.
 
 ;;
+;(gnutls-algorithm-priority “NORMAL:-VERS-TLS1.3) .
 (setq debug-on-error nil)
 (transient-mark-mode 0) ;; disable transient-mark-mode 
 (blink-cursor-mode 0)
 
 (setq exec-path (append exec-path '("/usr/local/bin")))
 (setq exec-path (append exec-path '("/Users/ywata/.local/bin")))
-
-(defun set-exec-path-from-shell-PATH ()
-  "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
-
-This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
-  (interactive)
-  (let ((path-from-shell
-	 (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-(set-exec-path-from-shell-PATH)
-
-(let* ((coding-system-for-read 'utf-8)
-       (agda-mode-el (shell-command-to-string "agda-mode locate"))
-       (agda-mode-el- (shell-command-to-string (expand-file-name "~/.local/bin/agda-mode locate"))))
-  (progn (if (file-exists-p agda-mode-el)
-	     (load agda-mode-el)
-	   (if (file-exists-p agda-mode-el-) (load agda-mode-el-)))
-	 (if (boundp 'agda2-mode-map)
-	     (define-key agda2-mode-map (kbd "C-c C-i") #'agda2-insert-commented-region))))
-
-(defun agda2-insert-commented-region ()
-    "insert agda2 goal buffer"
-  (interactive)
-  (if (buffer-live-p agda2-info-buffer)
-      (save-excursion
-	(with-current-buffer agda2-info-buffer
-	  (copy-region-as-kill (point-min) (point-max)))
-	(insert "{-\n")
-	(yank)
-	(insert "-}"))))
 
 
 ; flicker(setq redisplay-dont-pause nil)
@@ -85,19 +55,25 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
       (define-prefix-command 'ctl-Q-keymap)
       (global-set-key (kbd "C-q") 'ctl-Q-keymap)
       (define-key ctl-Q-keymap (kbd "\C-d") #'view-window-mode)
-      ;;(define-key ctl-Q-keymap (kbd "\C-e") #'eval-last-sexp)
+      (define-key ctl-Q-keymap (kbd "\C-e") #'eval-last-sexp)
       (define-key ctl-Q-keymap (kbd "\C-e") #'next-error)
-      (define-key ctl-Q-keymap (kbd "\C-n") #'view-window-next-buffer)
-      (define-key ctl-Q-keymap (kbd "\C-p") #'view-window-prev-buffer)
-      (define-key ctl-Q-keymap (kbd "\C-s") #'helm-swoop)
-      (define-key ctl-Q-keymap (kbd "s") #'avy-isearch)
-      (define-key ctl-Q-keymap (kbd "\C-s") #'whitespace-mode)
+
+		     
+;;      (define-key ctl-Q-keymap (kbd "\C-n") #'view-window-next-buffer)
+;;      (define-key ctl-Q-keymap (kbd "\C-p") #'view-window-prev-buffer)
+      (define-key ctl-Q-keymap (kbd "\C-n") #'bs-cycle-next)
+      (define-key ctl-Q-keymap (kbd "\C-p") #'bs-cycle-previous)
+      (define-key global-map (kbd "M-]") #'bs-cycle-next)
+      (define-key global-map (kbd "M-[") #'bs-cycle-previous)
+      (define-key ctl-Q-keymap (kbd "\C-s") #'whitespace-mode)      
+;      (define-key ctl-Q-keymap (kbd "\C-s") #'helm-swoop)
+;      (define-key ctl-Q-keymap (kbd "s") #'avy-isearch)
+
+      (define-key ctl-Q-keymap (kbd "\C-q") #'quoted-insert)
       (setq outline-minor-mode-prefix "\C-c\C-q")
       
       (define-key global-map (kbd "C-<down-mouse-1>") #'do-nothing)
-      (define-key global-map (kbd "C-<mouse-1>") #'do-nothing)
-      
-      )
+      (define-key global-map (kbd "C-<mouse-1>") #'do-nothing))
   (progn
     ))
 
@@ -156,8 +132,8 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
   :ensure t)
 ;(use-package org-recent-headings
 ;  :ensure)
-(use-package helm-org-rifle
-  :ensure t)
+;(use-package helm-org-rifle
+;  :ensure t)
 
 ;(use-package my-agda2
 ;  :load-path "site-lisp/agda2"
@@ -166,6 +142,11 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (use-package view-window
   :load-path "site-lisp/view-window"
   :demand)
+
+;(use-package font-tool
+;  :load-path "site-lisp/font-tool"
+;  :demand)
+
 
 ;(use-package eaw
 ;  :load-path "site-lisp/eaw"
@@ -180,15 +161,14 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;;  :ensure
 ;;  :config (benchmark-init/activate))
 
-(use-package smartparens
-  :ensure t
-  :demand
-  :config
-  (add-hook 'haskell-mode-hook #'smartparens-mode)
-  (add-hook 'elm-mode-hook     #'smartparens-mode)
-  (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'idris-mode        #'smartparens-mode)
-  )
+;; (use-package smartparens
+;;   :ensure t
+;;   :demand
+;;   :config
+;;   (add-hook 'haskell-mode-hook #'smartparens-mode)
+;;   (add-hook 'elm-mode-hook     #'smartparens-mode)
+;;   (add-hook 'idris-mode        #'smartparens-mode)
+;  )
 
 (use-package rainbow-delimiters
   :ensure t
@@ -196,8 +176,8 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
   :config
   (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'elm-mode-hook     #'smartparens-mode)
-  (add-hook 'idris-mode        #'smartparens-mode)
+  (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)  
+
   )
 
 (use-package open-junk-file
@@ -279,10 +259,9 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
   :ensure t
   :init
   :config
-
   (helm-mode 1)
   (define-key global-map (kbd "M-x")     'helm-M-x)
-  (define-key global-map (kbd "C-x C-f") 'helm-find-files)
+
   (define-key global-map (kbd "C-x C-r") 'helm-recentf)
   (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
   (define-key global-map (kbd "C-c i")   'helm-imenu)
@@ -290,27 +269,29 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
   (define-key global-map (kbd "M-r")     'helm-resume)
   (define-key global-map (kbd "C-M-h")   'helm-apropos)
   (define-key helm-map (kbd "C-h") 'delete-backward-char)
+  (define-key global-map (kbd "C-x C-f") 'helm-find-files)  
   (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
   (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
   (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
   (setq helm-ff-skip-boring-files t)
   (customize-set-variable 'helm-boring-file-regexp-list (add-to-list 'helm-boring-file-regexp-list "\\.agdai$"))
-;;   (add-to-list 'completion-ignored-extensions ".agdai")  
+;   (add-to-list 'completion-ignored-extensions ".agdai")
 
-  (setq helm-ff-newfile-prompt-p nil))
+  (setq helm-ff-newfile-prompt-p nil)
+  )
 
 (use-package helm-ls-git
   :ensure t
-  :bind
-  (("C-q C-l" . helm-ls-git-ls))
+;;  :bind
+;;  (("C-q C-l" . helm-ls-git-ls))
   :config
   (global-set-key (kbd "C-x C-d") #'helm-browse-project)
   )
 
-(use-package helm-projectile
-  :ensure t
-  :config
-  (helm-projectile-on))
+;(use-package helm-projectile
+;  :ensure t
+;  :config
+;  (helm-projectile-on))
 
 ;;(use-package isearch+
 ;;  :ensure)
@@ -343,15 +324,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 	      ;; meghanada-mode on
 	      (meghanada-mode t)
 	      (add-hook 'before-save-hook 'delete-trailing-whitespace))))
-
-;; (use-package agda2-mode
-;;   :load-path "site-lisp/agda2-mode"
-;; ;  :ensure t
-;;   :config
-;;   (bind-keys :map agda2-mode-map ("C-c C-p" . agda2-abbrevs-code-block))
-;; ;  (setq agda2-font-name "DejaVu Sans Mono")
-;;  (load "my-agda2-abbrevs"))
-
 
 
 (set-face-attribute 'default nil
@@ -408,7 +380,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
       (pretify-symbols-mode nil)))
 
 
-
 (load "pg-ssr.el")
 (use-package company-coq
   :defer t)
@@ -427,42 +398,89 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
   :defer t
   :ensure t)
 
-(use-package intero
-  :ensure t
-  :defer 3)
+(cond
+ (nil
+  (use-package dante
+    :ensure t
+    :after haskell-mode
+    :commands 'dante-mode
+    :init
+    (defcustom dante-methods-alist
+      `((styx "styx.yaml" ("styx" "repl" dante-target))
+	(stack "stack.yaml" ("stack" "repl" dante-target))
+	(bare-cabal ,(lambda (d) (directory-files d t "..cabal$")) ("cabal" "repl" dante-target "--builddir=dist/dante"))
+	(bare-ghci ,(lambda (_) t) ("ghci")))
+      "How to automatically locate project roots and launch GHCi.
+This is an alist from method name to a pair of
+a `locate-dominating-file' argument and a command line."
+      :type '(alist :key-type symbol :value-type (list (choice (string :tag "File to locate") (function :tag "Predicate to use")) (repeat sexp))))
+    (add-hook 'haskell-mode-hook 'flycheck-mode)
+    ;; OR:
+    ;; (add-hook 'haskell-mode-hook 'flymake-mode)
+    (setq haskell-interactive-popup-errors nil)
+    (add-hook 'haskell-mode-hook 'dante-mode)))
+ 
+ (nil
+   (progn
+     (use-package
+       intero
+       :ensure t
+       :defer 3)
+     
+     (use-package haskell-mode
+       :ensure t
+       :mode "\\.hs"
+       :init
+       ;(add-hook 'haskell-mode-hook 'haskell-doc-mode)
+       ;;  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+       (add-hook 'haskell-mode-hook 'show-paren-mode)
+       ;; (add-hook 'haskell-mode-hook 'haskell-indent-mode) ;; I don't like this.
+       (add-hook 'haskell-mode-hook 'haskell-indentation-mode))))
 
-(use-package haskell-mode
-  :ensure t
-  :mode "\\.hs"
-  :init
-  (add-hook 'haskell-mode-hook 'haskell-doc-mode)
-;  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  (add-hook 'haskell-mode-hook 'show-paren-mode)
-;  (add-hook 'haskell-mode-hook 'haskell-indent-mode)
-;  (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-  (add-hook 'haskell-mode-hook 'intero-mode)
-;  (add-hook 'haskell-mode-hook
-;	    (defun haskell-project-mode ()
-;	      (interactive)
-;	      (when (projectile-project-p)
-;		(intero-mode)
-;		(flycheck-mode))))
-
-;  :config
-;  (defun haskell-mode-before-save-handler ()
-;    "Function that will be called before buffer's saving."
-;    (when (projectile-project-p)
-;      ;(haskell-sort-imports)
-;      ;(haskell-mode-stylish-buffer)
-;      ))
-  )
+   (nil
+    (progn
+      ;; LSP
+      (use-package flycheck
+	:ensure t
+	:init
+	(global-flycheck-mode t))
+      (use-package yasnippet
+	:ensure t)
+      (use-package spinner
+	:ensure t)
+      (use-package lsp-mode
+	:ensure t
+	:hook (haskell-mode . lsp)
+	:commands lsp)
+      (use-package lsp-ui
+	:ensure t
+	:commands lsp-ui-mode)
+      (use-package lsp-haskell
+	:ensure t
+	:config
+	;;	(setq lsp-haskell-process-path-hie "hie-wrapper")
+	(setq lsp-haskell-process-path-hie "ghcide")	
+	(setq lsp-haskell-process-args-hie '())
+	;; Comment/uncomment this line to see interactions between lsp client/server.
+	(setq lsp-log-io t)
+	)))
+   (t
+    (use-package eglot
+      :ensure t
+      :config
+      (setq haskell-interactive-popup-errors nil)
+      (add-to-list 'eglot-server-programs '(haskell-mode . ("ghcide" "--lsp"))))))
 
 (use-package flycheck-haskell
   :ensure t
   :config
-  (with-eval-after-load 'intero
-    (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
-  (add-hook 'haskell-mode-hook #'flycheck-haskell-setup))
+;;  (with-eval-after-load 'intero
+;;    (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
+  (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
+  (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
+  )
+
+
 
 
 (use-package haskell-snippets
@@ -507,10 +525,10 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 ;(use-package helm-migemo
 ;; :ensure t)
-(use-package helm-swoop
-  :ensure t
-  :config
-  )
+;(use-package helm-swoop
+;  :ensure t
+;  :config
+;  )
 
 ;(use-package avy
 ;  :ensure)
@@ -547,6 +565,32 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
   :config
   (add-hook 'haskell-mode-hook #'highlight-symbol-mode))
 
+;; キーに登録する関数を返す関数
+(defun local-switch-workspace (i)
+  (let ((index i))
+	       (lambda ()
+		 (interactive)
+		 (persp-switch (int-to-string index)))))
+
+(use-package perspective
+  :ensure t
+  :config
+  (progn
+    (persp-mode 1)
+    ;; ワークスペース生成
+    (mapc (lambda (i)
+	    (persp-switch (int-to-string i)))
+	  (number-sequence 0 9))
+    
+    ;; キーバインドの登録を行う
+    (mapc (lambda (i)
+	    (global-set-key (kbd (format "H-%d" i)) (local-switch-workspace i)))
+	  (number-sequence 0 9))
+    
+    ;; 最初のワークスペースは"1"に設定
+    (persp-switch "1")))
+
+
 ;;(use-package live-code-talks
 ;;  :ensure)
 
@@ -559,6 +603,11 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;; ;;  (key-chord-define-global "fj" #'goto-line)
 ;; )
 (use-package z3-mode
+  :ensure t
+  :defer t
+  :defer 10)
+
+(use-package reason-mode
   :ensure t
   :defer t
   :defer 10)
@@ -583,6 +632,15 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;;  :defer 30)
 
 
+;(use-package ediprolog
+;  :ensure
+;  :config
+;  (setq prolog-system 'swi
+;	prolog-program-switches '((swi ("-G128M" "-T128M" "-L128M" "-O"))
+;				  (t nil))
+;	prolog-electric-if-then-else-flag t))
+      
+
 ;; (use-package ace-jump-mode
 ;; 	     :ensure t
 ;; 	     :config
@@ -603,6 +661,45 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;; 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-" c))
 ;; 	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
 ;; 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
+
+
+;; Agda2 mode setup is performed at the end of the initalization
+;; since .lagda.md should be before .md as a auto-mode-alist
+
+(defun set-exec-path-from-shell-PATH ()
+  "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
+
+This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
+  (interactive)
+  (let ((path-from-shell
+	 (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+(set-exec-path-from-shell-PATH)
+
+(let* ((coding-system-for-read 'utf-8)
+       (agda-mode-el (shell-command-to-string "agda-mode locate"))
+       (agda-mode-el- (shell-command-to-string (expand-file-name "~/.local/bin/agda-mode locate"))))
+  (progn (if (file-exists-p agda-mode-el)
+	     (load agda-mode-el)
+	   (if (file-exists-p agda-mode-el-) (load agda-mode-el-)))
+	 (if (boundp 'agda2-mode-map)
+	     (define-key agda2-mode-map (kbd "C-c C-i") #'agda2-insert-commented-region))
+	 (if (fboundp #'agda2-mode)
+	     (add-to-list 'auto-mode-alist '("\\.lagda\\.md$" . agda2-mode)))))
+
+
+(defun agda2-insert-commented-region ()
+    "insert agda2 goal buffer"
+  (interactive)
+  (if (buffer-live-p agda2-info-buffer)
+      (save-excursion
+	(with-current-buffer agda2-info-buffer
+	  (copy-region-as-kill (point-min) (point-max)))
+	(insert "{-\n")
+	(yank)
+	(insert "-}"))))
+
 
 (setq x->bool (lambda (elt) (not (not elt)))
       darwin-p  (eq system-type 'darwin)
@@ -632,7 +729,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
  		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
 ;    (add-to-list 'default-frame-alist
 ; 		 '(font . "-*-*-*-*-*-*-20-*-*-*-*-*-*-*"))
-    (add-to-list 'default-frame-alist '(width . 120))
+    (add-to-list 'default-frame-alist '(width . 124))
     (add-to-list 'default-frame-alist '(height . 50))
     (add-to-list 'default-frame-alist '(top . 0))
     (add-to-list 'default-frame-alist '(left . 0))
@@ -652,4 +749,3 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (setq mouse-wheel-tilt-scroll t))
 
 (put 'downcase-region 'disabled nil)
-
