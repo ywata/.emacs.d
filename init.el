@@ -49,7 +49,7 @@
   "Do nothing interactive command to avoid ring bell for key binding."
   (interactive))
 
-
+(prefer-coding-system 'utf-8)
 (if t
     (progn
       (define-prefix-command 'ctl-Q-keymap)
@@ -58,20 +58,19 @@
       (define-key ctl-Q-keymap (kbd "\C-e") #'eval-last-sexp)
       (define-key ctl-Q-keymap (kbd "\C-e") #'next-error)
 
-		     
 ;;      (define-key ctl-Q-keymap (kbd "\C-n") #'view-window-next-buffer)
 ;;      (define-key ctl-Q-keymap (kbd "\C-p") #'view-window-prev-buffer)
       (define-key ctl-Q-keymap (kbd "\C-n") #'bs-cycle-next)
       (define-key ctl-Q-keymap (kbd "\C-p") #'bs-cycle-previous)
       (define-key global-map (kbd "M-]") #'bs-cycle-next)
       (define-key global-map (kbd "M-[") #'bs-cycle-previous)
-      (define-key ctl-Q-keymap (kbd "\C-s") #'whitespace-mode)      
+      (define-key ctl-Q-keymap (kbd "\C-s") #'whitespace-mode)
+      (define-key ctl-Q-keymap (kbd "\C-w") #'insert-weight)
 ;      (define-key ctl-Q-keymap (kbd "\C-s") #'helm-swoop)
 ;      (define-key ctl-Q-keymap (kbd "s") #'avy-isearch)
 
       (define-key ctl-Q-keymap (kbd "\C-q") #'quoted-insert)
       (setq outline-minor-mode-prefix "\C-c\C-q")
-      
       (define-key global-map (kbd "C-<down-mouse-1>") #'do-nothing)
       (define-key global-map (kbd "C-<mouse-1>") #'do-nothing))
   (progn
@@ -127,6 +126,13 @@
   :defer t
   :ensure t)
 
+(use-package gnuplot
+  :defer t
+  :ensure t
+  :config
+  (add-to-list 'exec-path "~/.nix-profile/bin/")
+  )
+
 (use-package org-sticky-header
   :defer t
   :ensure t)
@@ -135,9 +141,6 @@
 ;(use-package helm-org-rifle
 ;  :ensure t)
 
-;(use-package my-agda2
-;  :load-path "site-lisp/agda2"
-;  :ensure t)
 
 (use-package view-window
   :load-path "site-lisp/view-window"
@@ -157,6 +160,10 @@
   :load-path "site-lisp"
   :demand)
 
+(use-package weight-helper
+  :load-path "site-lisp"
+  :demand)
+
 ;;(use-package benchmark-init
 ;;  :ensure
 ;;  :config (benchmark-init/activate))
@@ -167,7 +174,6 @@
 ;;   :config
 ;;   (add-hook 'haskell-mode-hook #'smartparens-mode)
 ;;   (add-hook 'elm-mode-hook     #'smartparens-mode)
-;;   (add-hook 'idris-mode        #'smartparens-mode)
 ;  )
 
 (use-package rainbow-delimiters
@@ -176,23 +182,20 @@
   :config
   (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'emacs-mode-hook #'rainbow-delimiters-mode)  
-
   )
 
 (use-package open-junk-file
   :defer t
   :ensure t)
 
-(use-package lean-mode
-  :defer t
-  :ensure t)
+;;(use-package lean-mode
+;;  :defer t
+;;  :ensure t)
 
 (use-package paredit-everywhere
   :defer t
   :ensure t
   :config
-;;  (add-hook 'haskell-mode-hook #'paredit-everywhere-mode)
   )
 
 ;(use-package paren
@@ -269,7 +272,7 @@
   (define-key global-map (kbd "M-r")     'helm-resume)
   (define-key global-map (kbd "C-M-h")   'helm-apropos)
   (define-key helm-map (kbd "C-h") 'delete-backward-char)
-  (define-key global-map (kbd "C-x C-f") 'helm-find-files)  
+  (define-key global-map (kbd "C-x C-f") 'helm-find-files)
   (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
   (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
   (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
@@ -315,37 +318,23 @@
 ;(use-package indium
 ;  :ensure)
 
-(use-package meghanada
-  :ensure t
-  :defer t
-  :config
-  (add-hook 'java-mode-hook
-	    (lambda ()
-	      ;; meghanada-mode on
-	      (meghanada-mode t)
-	      (add-hook 'before-save-hook 'delete-trailing-whitespace))))
+;; (use-package meghanada
+;;   :ensure t
+;;   :defer t
+;;   :config
+;;   (add-hook 'java-mode-hook
+;; 	    (lambda ()
+;; 	      ;; meghanada-mode on
+;; 	      (meghanada-mode t)
+;;	      (add-hook 'before-save-hook 'delete-trailing-whitespace))))
 
 
-(set-face-attribute 'default nil
-		    :family "DejaVu Sans Mono"
-		    :height 200     ;20pt
-		    :weight 'normal
-		    :width  'normal)
-
-; fix \:
-(set-fontset-font "fontset-default"
-		  (cons (decode-char 'ucs #x2982)
-			(decode-char 'ucs #x2982))
-		  "STIX")
-
-;(load-file (let ((coding-system-for-read 'utf-8))
-;                (shell-command-to-string "agda-mode locate")))
 
 
 (use-package coq-commenter
   :ensure t
   :defer t)
-  
+
 (use-package company-coq
   :ensure t
   :defer t
@@ -384,12 +373,35 @@
 (use-package company-coq
   :defer t)
 
+;(customize-set-variable 'idris-interpreter-path "idris")
+;(customize-set-variable 'idris-command-line-option-functions nil)
+;(customize-set-variable 'idris-command-line-option-functions '((lambda () (list "-p" "base" "-p" "contrib" "-p" "network" ))))
+
+					;(idris-compute-flags)
+(progn
+  (customize-set-variable 'idris-interpreter-path "~/.idris2/bin/idris2")
+  (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t)
+;  (customize-set-variable 'idris-command-line-option-functions nil)
+
+;  This works.
+  (customize-set-variable 'idris-command-line-option-functions
+			  '((lambda () (list
+					"-p contrib" "-p network"))))
+			    )
+
+
 (use-package idris-mode
-  :defer t
-  :ensure t)
+  :ensure t
+  :mode "\\.idr"
+  :config
+  (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t))
+
+
 (use-package helm-idris
   :defer t
   :ensure t)
+
+
 (use-package elm-mode
   :defer t
   :ensure t
@@ -398,6 +410,9 @@
   :defer t
   :ensure t)
 
+
+
+;; Historical haskell-mode settings
 (cond
  (nil
   (use-package dante
@@ -414,19 +429,17 @@
 This is an alist from method name to a pair of
 a `locate-dominating-file' argument and a command line."
       :type '(alist :key-type symbol :value-type (list (choice (string :tag "File to locate") (function :tag "Predicate to use")) (repeat sexp))))
-    (add-hook 'haskell-mode-hook 'flycheck-mode)
+    ;;(add-hook 'haskell-mode-hook 'flycheck-mode)
     ;; OR:
     ;; (add-hook 'haskell-mode-hook 'flymake-mode)
     (setq haskell-interactive-popup-errors nil)
     (add-hook 'haskell-mode-hook 'dante-mode)))
- 
  (nil
    (progn
      (use-package
        intero
        :ensure t
        :defer 3)
-     
      (use-package haskell-mode
        :ensure t
        :mode "\\.hs"
@@ -436,13 +449,12 @@ a `locate-dominating-file' argument and a command line."
        (add-hook 'haskell-mode-hook 'show-paren-mode)
        ;; (add-hook 'haskell-mode-hook 'haskell-indent-mode) ;; I don't like this.
        (add-hook 'haskell-mode-hook 'haskell-indentation-mode))))
-
-   (nil
-    (progn
+ (nil
+  (progn
       ;; LSP
       (use-package flycheck
 	:ensure t
-	:init
+	:config
 	(global-flycheck-mode t))
       (use-package yasnippet
 	:ensure t)
@@ -459,28 +471,54 @@ a `locate-dominating-file' argument and a command line."
 	:ensure t
 	:config
 	;;	(setq lsp-haskell-process-path-hie "hie-wrapper")
-	(setq lsp-haskell-process-path-hie "ghcide")	
-	(setq lsp-haskell-process-args-hie '())
+;	(setq lsp-haskell-process-path-hie "ghcide"
+;	(setq lsp-haskell-process-args-hie '())
 	;; Comment/uncomment this line to see interactions between lsp client/server.
 	(setq lsp-log-io t)
 	)))
-   (t
+ (nil
     (use-package eglot
       :ensure t
       :config
       (setq haskell-interactive-popup-errors nil)
-      (add-to-list 'eglot-server-programs '(haskell-mode . ("ghcide" "--lsp"))))))
-
-(use-package flycheck-haskell
-  :ensure t
-  :config
-;;  (with-eval-after-load 'intero
-;;    (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
-  (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
-  (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
-  )
-
-
+      (add-to-list 'eglot-server-programs '(haskell-mode . ("ghcide" "--lsp")))))
+ (nil
+  (use-package flycheck-haskell
+    :ensure t
+    :config
+    ;;  (with-eval-after-load 'intero
+    ;;    (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
+    (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
+    (add-hook 'haskell-mode-hook #'interactive-haskell-mode)))
+ (t
+  (progn
+    (use-package haskell-mode
+      :ensure t
+      :mode "\\.hs"
+      :config
+      (setq haskell-compile-cabal-build-command "cabal new-build")
+      (interactive-haskell-mode t)
+      (add-hook 'haskell-mode-hook #'lsp)
+      (add-hook 'haskell-literate-mode-hook #'lsp)
+      (add-hook 'haskell-mode-hook #'show-paren-mode)
+      (add-hook 'haskell-mode-hook #'haskell-indentation-mode)
+      (add-hook 'haskell-mode-hook #'interactive-haskell-mode))
+    (use-package lsp-mode
+      :ensure t
+      :hook (haskell-mode . lsp)
+      :commands lsp)
+    (use-package lsp-ui
+      :ensure t
+      :commands lsp-ui-mode)
+    (use-package lsp-haskell
+      :ensure t
+      :config
+      (add-hook 'haskell-mode-hook #'lsp)
+      (add-hook 'haskell-literate-mode-hook #'lsp)
+      (setq lsp-haskell-server-path "~/.local/bin/ghcide")
+      (setq lsp-haskell-server-args '())
+      (setq lsp-log-io t)
+      ))))
 
 
 (use-package haskell-snippets
@@ -490,6 +528,7 @@ a `locate-dominating-file' argument and a command line."
   :defer t
   :diminish subword-mode
   :init
+  (setq haskell-interactive-popup-errors nil)
   (add-hook 'haskell-mode-hook 'subword-mode))
 
 
@@ -558,12 +597,12 @@ a `locate-dominating-file' argument and a command line."
   :config
   (volatile-highlights-mode))
 
-(use-package highlight-symbol
-  :ensure t
-  :defer t
-  :bind (("C-q C-w" . highlight-symbol-at-point))
-  :config
-  (add-hook 'haskell-mode-hook #'highlight-symbol-mode))
+;(use-package highlight-symbol
+;  :ensure t
+;  :defer t
+;  :bind (("C-q C-w" . highlight-symbol-at-point))
+;  :config
+;  (add-hook 'haskell-mode-hook #'highlight-symbol-mode))
 
 ;; キーに登録する関数を返す関数
 (defun local-switch-workspace (i)
@@ -572,23 +611,21 @@ a `locate-dominating-file' argument and a command line."
 		 (interactive)
 		 (persp-switch (int-to-string index)))))
 
-(use-package perspective
-  :ensure t
-  :config
-  (progn
-    (persp-mode 1)
-    ;; ワークスペース生成
-    (mapc (lambda (i)
-	    (persp-switch (int-to-string i)))
-	  (number-sequence 0 9))
-    
-    ;; キーバインドの登録を行う
-    (mapc (lambda (i)
-	    (global-set-key (kbd (format "H-%d" i)) (local-switch-workspace i)))
-	  (number-sequence 0 9))
-    
-    ;; 最初のワークスペースは"1"に設定
-    (persp-switch "1")))
+;; (use-package perspective
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (persp-mode 1)
+;;     ;; ワークスペース生成
+;;     (mapc (lambda (i)
+;; 	    (persp-switch (int-to-string i)))
+;; 	  (number-sequence 0 9))
+;;     ;; キーバインドの登録を行う
+;;     (mapc (lambda (i)
+;; 	    (global-set-key (kbd (format "H-%d" i)) (local-switch-workspace i)))
+;; 	  (number-sequence 0 9))
+;;     ;; 最初のワークスペースは"1"に設定
+;;     (persp-switch "1")))
 
 
 ;;(use-package live-code-talks
@@ -602,15 +639,44 @@ a `locate-dominating-file' argument and a command line."
 ;; ;;  (key-chord-define-global "gl" #'goto-line)
 ;; ;;  (key-chord-define-global "fj" #'goto-line)
 ;; )
-(use-package z3-mode
-  :ensure t
-  :defer t
-  :defer 10)
+;(use-package z3-mode
+;  :ensure t
+;  :defer t
+;  :defer 10)
 
 (use-package reason-mode
   :ensure t
   :defer t
   :defer 10)
+
+(cond (nil
+(use-package lingature
+  :load-path "site-lisp/lingature.el"
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                       "\\" "://"))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))))
+
+
 
 ;;(use-package plantuml-mode
 ;;  :ensure
@@ -639,7 +705,6 @@ a `locate-dominating-file' argument and a command line."
 ;	prolog-program-switches '((swi ("-G128M" "-T128M" "-L128M" "-O"))
 ;				  (t nil))
 ;	prolog-electric-if-then-else-flag t))
-      
 
 ;; (use-package ace-jump-mode
 ;; 	     :ensure t
@@ -677,28 +742,63 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (setq exec-path (split-string path-from-shell path-separator))))
 (set-exec-path-from-shell-PATH)
 
-(let* ((coding-system-for-read 'utf-8)
-       (agda-mode-el (shell-command-to-string "agda-mode locate"))
-       (agda-mode-el- (shell-command-to-string (expand-file-name "~/.local/bin/agda-mode locate"))))
-  (progn (if (file-exists-p agda-mode-el)
-	     (load agda-mode-el)
-	   (if (file-exists-p agda-mode-el-) (load agda-mode-el-)))
-	 (if (boundp 'agda2-mode-map)
-	     (define-key agda2-mode-map (kbd "C-c C-i") #'agda2-insert-commented-region))
-	 (if (fboundp #'agda2-mode)
-	     (add-to-list 'auto-mode-alist '("\\.lagda\\.md$" . agda2-mode)))))
+
+					; -- agda
+
+(defun agda2-mode-path ()
+  "Load agda-mode"
+ (let* ((coding-system-for-read 'utf-8)
+	(agda-mode-el (shell-command-to-string "agda-mode locate"))
+	(agda-mode-el- (shell-command-to-string (expand-file-name "~/.local/bin/agda-mode locate"))))
+   (cond ((file-exists-p agda-mode-el)
+	  (file-name-directory agda-mode-el))
+	 ((file-exists-p agda-mode-el-)
+	  (file-name-directory agda-mode-el-))
+	 (nil "~/.emacs.d/site-lisp/"))))
+
+(defmacro use-package-agda2 (agda2-path)
+  "Use use-package macro dynamically."
+  `(use-package agda2-mode
+      :load-path ,agda2-path
+      :ensure t
+      :config
+      (progn
+	(define-key agda2-mode-map (kbd "C-c .") #'quail-show-key)
+	(define-key agda2-mode-map (kbd "C-c /") #'agda-input-show-translations)
+	(if (fboundp #'agda2-mode)
+	    (add-to-list 'auto-mode-alist '("\\.lagda\\.md$" . agda2-mode))
+	  (if (boundp 'agda2-mode-map)
+	      (define-key agda2-mode-map (kbd "C-c C-i") #'agda2-insert-commented-region))))))
+(setq agda2-path (agda2-mode-path))
+(use-package-agda2 (agda2-path))
 
 
-(defun agda2-insert-commented-region ()
-    "insert agda2 goal buffer"
-  (interactive)
-  (if (buffer-live-p agda2-info-buffer)
-      (save-excursion
-	(with-current-buffer agda2-info-buffer
-	  (copy-region-as-kill (point-min) (point-max)))
-	(insert "{-\n")
-	(yank)
-	(insert "-}"))))
+
+(set-face-attribute 'default nil
+		    ;;:family "DejaVu Sans Mono"
+		    :family "mononoki"
+		    :height 200     ;20pt
+		    :weight 'medium
+		    :width  'normal)
+(set-face-attribute 'default nil
+		    :family "FiraCode"
+		    :height 200     ;20pt
+		    :weight 'medium
+		    :width  'normal)
+(set-face-attribute 'default nil
+		    :family "JetBrains Mono"
+		    :height 160     ;20pt
+		    :weight 'medium
+		    :width  'normal)
+
+; fix for DejaVu Sans Mono
+;(set-fontset-font "fontset-default"
+;		  (cons (decode-char 'ucs #x2982)
+;			(decode-char 'ucs #x2982))
+;		  "STIX")
+;
+;(load-file (let ((coding-system-for-read 'utf-8))
+;                (shell-command-to-string "agda-mode locate")))
 
 
 (setq x->bool (lambda (elt) (not (not elt)))
@@ -723,16 +823,17 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 (when (and darwin-p (or ns-p mac-p))
   (progn
-;    (set-fontset-font "fontset-default" nil
-;                      (font-spec :name "DejaVu Sans"))    
-    (add-to-list 'default-frame-alist
- 		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
+    (set-fontset-font "fontset-default" nil
+                      (font-spec :name "DejaVu Sans"))
+;    (add-to-list 'default-frame-alist
+; 		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
 ;    (add-to-list 'default-frame-alist
 ; 		 '(font . "-*-*-*-*-*-*-20-*-*-*-*-*-*-*"))
     (add-to-list 'default-frame-alist '(width . 124))
     (add-to-list 'default-frame-alist '(height . 50))
     (add-to-list 'default-frame-alist '(top . 0))
     (add-to-list 'default-frame-alist '(left . 0))
+    ;(set-default line-spacing 0)
 
     (setq ns-alternate-modifier 'meta
 	  ns-command-modifier 'meta
@@ -749,3 +850,15 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (setq mouse-wheel-tilt-scroll t))
 
 (put 'downcase-region 'disabled nil)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
