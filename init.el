@@ -28,7 +28,7 @@
 ;;
 ;(gnutls-algorithm-priority “NORMAL:-VERS-TLS1.3) .
 (setq debug-on-error nil)
-(transient-mark-mode 0) ;; disable transient-mark-mode 
+(transient-mark-mode 0) ;; disable transient-mark-mode
 (blink-cursor-mode 0)
 
 (setq exec-path (append exec-path '("/usr/local/bin")))
@@ -358,7 +358,6 @@
 ;  (("<left>" . proof-undo-last-successful-command)
 ;   ("<right>" . proof-assert-next-command-interactive)
 ;   ("S-<right>" . proot-goto-point)
-  
   :init
   (setq coq-prog-name "/Users/ywata/.opam//4.05.0/bin/coqtop")
   (setq coq-indent-proofstart 0)
@@ -386,8 +385,8 @@
 ;  This works.
   (customize-set-variable 'idris-command-line-option-functions
 			  '((lambda () (list
-					"-p contrib" "-p network"))))
-			    )
+					"-p contrib" "-p network")))))
+
 
 
 (use-package idris-mode
@@ -490,7 +489,7 @@ a `locate-dominating-file' argument and a command line."
     ;;    (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
     (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
     (add-hook 'haskell-mode-hook #'interactive-haskell-mode)))
- (t
+ (nil
   (progn
     (use-package haskell-mode
       :ensure t
@@ -498,11 +497,13 @@ a `locate-dominating-file' argument and a command line."
       :config
       (setq haskell-compile-cabal-build-command "cabal new-build")
       (interactive-haskell-mode t)
+      (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
+      (add-hook 'haskell-mode-hook #'show-paren-mode)
       (add-hook 'haskell-mode-hook #'lsp)
       (add-hook 'haskell-literate-mode-hook #'lsp)
-      (add-hook 'haskell-mode-hook #'show-paren-mode)
       (add-hook 'haskell-mode-hook #'haskell-indentation-mode)
-      (add-hook 'haskell-mode-hook #'interactive-haskell-mode))
+      (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
+      )
     (use-package lsp-mode
       :ensure t
       :hook (haskell-mode . lsp)
@@ -517,12 +518,42 @@ a `locate-dominating-file' argument and a command line."
       (add-hook 'haskell-literate-mode-hook #'lsp)
       (setq lsp-haskell-server-path "~/.local/bin/ghcide")
       (setq lsp-haskell-server-args '())
-      (setq lsp-log-io t)
-      ))))
+;;      (setq lsp-log-io t)
+      )))
+ (t
+  (progn
+    (use-package flycheck
+      :ensure t
+      :init
+      (global-flycheck-mode t))
+    (use-package yasnippet
+      :ensure t)
+    (use-package lsp-mode
+      :ensure t
+      :hook (haskell-mode . lsp)
+      :commands lsp)
+    (use-package lsp-ui
+      :ensure t
+      :commands lsp-ui-mode)
+    (use-package lsp-haskell
+      :ensure t
+      :config
+      (setq lsp-haskell-server-path "haskell-language-server-wrapper")
+      (setq lsp-haskell-server-args ())
+      (add-hook 'haskell-literate-mode-hook #'lsp)
+      (add-hook 'haskell-mode-hook #'lsp)
+      (add-hook 'haskell-literate-mode-hook #'lsp)
+      (add-hook 'haskell-mode-hook #'haskell-indentation-mode)
+      (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
+      ;; Comment/uncomment this line to see interactions between lsp client/server.
+      (interactive-haskell-mode t)
+      (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
+      (add-hook 'haskell-mode-hook #'show-paren-mode)
+      (setq lsp-log-io t)))))
 
+;;(use-package haskell-snippets
+;;  :ensure t)
 
-(use-package haskell-snippets
-  :ensure t)
 (use-package subword
   :ensure t
   :defer t
@@ -676,7 +707,8 @@ a `locate-dominating-file' argument and a command line."
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))))
 
-
+(use-package protobuf-mode
+  :ensure t)
 
 ;;(use-package plantuml-mode
 ;;  :ensure
@@ -772,6 +804,8 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (setq agda2-path (agda2-mode-path))
 (use-package-agda2 (agda2-path))
 
+(use-package go-mode
+  :ensure t)
 
 
 (set-face-attribute 'default nil
@@ -790,6 +824,8 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 		    :height 160     ;20pt
 		    :weight 'medium
 		    :width  'normal)
+
+
 
 ; fix for DejaVu Sans Mono
 ;(set-fontset-font "fontset-default"
@@ -850,15 +886,3 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (setq mouse-wheel-tilt-scroll t))
 
 (put 'downcase-region 'disabled nil)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
