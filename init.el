@@ -377,29 +377,32 @@
 ;(customize-set-variable 'idris-command-line-option-functions '((lambda () (list "-p" "base" "-p" "contrib" "-p" "network" ))))
 
 					;(idris-compute-flags)
+
 (progn
-  (customize-set-variable 'idris-interpreter-path "~/.idris2/bin/idris2")
-  (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t)
-;  (customize-set-variable 'idris-command-line-option-functions nil)
-
-;  This works.
-  (customize-set-variable 'idris-command-line-option-functions
+  (use-package idris-mode
+    :load-path "site-lisp/idris-mode"
+    :mode "\\.idr"
+    :config
+    (customize-set-variable 'idris-interpreter-path "~/.idris2/bin/idris2")
+    
+    (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t)
+    (customize-set-variable 'idris-command-line-option-functions
 			  '((lambda () (list
-					"-p contrib" "-p network")))))
-
-
-
-(use-package idris-mode
-  :ensure t
-  :mode "\\.idr"
-  :config
-  (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t))
-
-
-(use-package helm-idris
-  :defer t
-  :ensure t)
-
+					"-p base" "-p idris2" "-p contrib" "-p network" "--no-color")))))
+  (use-package lsp-mode
+    :ensure t
+    :hook (idris-mode . lsp)
+    :commands lsp)
+  (use-package lsp-idris2
+    :load-path "site-lisp/lsp-idris2"
+    :config
+    (add-hook 'idris-mode-hook #'lsp)
+    (add-hook 'idris-literate-mode-hook #'lsp)
+;;    (custom-set-variables '(lsp-idris2-server-path "path to idris2-lsp in your environment")))
+    (custom-set-variables '(lsp-idris2-server-path "/Users/ywata/lang/idris/idris2-lsp/build/exec/idris2-lsp")))  
+  (use-package helm-idris
+    :defer t
+    :ensure t))
 
 (use-package elm-mode
   :defer t
@@ -522,12 +525,12 @@ a `locate-dominating-file' argument and a command line."
       )))
  (t
   (progn
-    (use-package flycheck
-      :ensure t
-      :init
-      (global-flycheck-mode t))
-    (use-package yasnippet
-      :ensure t)
+;;    (use-package flycheck
+;;      :ensure t
+;;      :init
+;;      (global-flycheck-mode t))
+;;    (use-package yasnippet
+;;      :ensure t)
     (use-package lsp-mode
       :ensure t
       :hook (haskell-mode . lsp)
@@ -540,14 +543,24 @@ a `locate-dominating-file' argument and a command line."
       :config
       (setq lsp-haskell-server-path "haskell-language-server-wrapper")
       (setq lsp-haskell-server-args ())
-      (add-hook 'haskell-literate-mode-hook #'lsp)
+      ;;https://github.com/serras/emacs-haskell-tutorial/blob/master/tutorial.md
+      (custom-set-variables '(haskell-process-type 'cabal-repl))
+      ;;(custom-set-variables '(haskell-process-type 'stack-ghci))
+      
+      ;; https://github.com/emacs-lsp/lsp-haskell
       (add-hook 'haskell-mode-hook #'lsp)
-      (add-hook 'haskell-literate-mode-hook #'lsp)
       (add-hook 'haskell-mode-hook #'haskell-indentation-mode)
       (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
+
+      (add-hook 'haskell-literate-mode-hook #'lsp)
+      (define-key interactive-haskell-mode-map (kbd "M-.") 'haskell-mode-goto-loc)
+      (define-key interactive-haskell-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
+      
+      (setq lsp-prefer-flymake nil)
+      
       ;; Comment/uncomment this line to see interactions between lsp client/server.
-      (interactive-haskell-mode t)
-      (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
+      ;;(interactive-haskell-mode t)
+      ;;(add-hook 'haskell-mode-hook #'interactive-haskell-mode)
       (add-hook 'haskell-mode-hook #'show-paren-mode)
       (setq lsp-log-io t)))))
 
@@ -886,3 +899,5 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (setq mouse-wheel-tilt-scroll t))
 
 (put 'downcase-region 'disabled nil)
+
+;;;
