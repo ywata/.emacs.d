@@ -65,7 +65,7 @@
       (define-key global-map (kbd "M-]") #'bs-cycle-next)
       (define-key global-map (kbd "M-[") #'bs-cycle-previous)
       (define-key ctl-Q-keymap (kbd "\C-s") #'whitespace-mode)
-      (define-key ctl-Q-keymap (kbd "\C-w") #'insert-weight)
+      (define-key ctl-Q-keymap (kbd "\C-w") #'weight-insert-default-file)
 ;      (define-key ctl-Q-keymap (kbd "\C-s") #'helm-swoop)
 ;      (define-key ctl-Q-keymap (kbd "s") #'avy-isearch)
 
@@ -162,6 +162,7 @@
 
 (use-package weight-helper
   :load-path "site-lisp"
+  :config (setq weight-file (expand-file-name "~/Memo/weight.csv"))
   :demand)
 
 ;;(use-package benchmark-init
