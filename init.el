@@ -549,8 +549,8 @@ a `locate-dominating-file' argument and a command line."
     (use-package lsp-haskell
       :ensure t
       :config
-      (setq lsp-haskell-server-path "haskell-language-server-wrapper")
-      (setq lsp-haskell-server-args ())
+      (custom-set-variables '(lsp-haskell-server-path "haskell-language-server-wrapper"))
+      (custom-set-variables '(lsp-haskell-server-args '()))
       ;;https://github.com/serras/emacs-haskell-tutorial/blob/master/tutorial.md
       (custom-set-variables '(haskell-process-type 'cabal-repl))
       ;;(custom-set-variables '(haskell-process-type 'stack-ghci))
