@@ -479,9 +479,7 @@ a `locate-dominating-file' argument and a command line."
 	:ensure t
 	:hook (haskell-mode . lsp)
 	:commands lsp)
-      (use-package lsp-ui
-	:ensure t
-	:commands lsp-ui-mode)
+      
       (use-package lsp-haskell
 	:ensure t
 	:config
@@ -543,7 +541,11 @@ a `locate-dominating-file' argument and a command line."
 ;;      :init
 ;;      (global-flycheck-mode t))
 ;;    (use-package yasnippet
-;;      :ensure t)
+    ;;      :ensure t)
+    (use-package lsp-ui
+      :ensure t
+      :commands lsp-ui-mode)
+    
     (use-package lsp-haskell
       :ensure t
       :config
