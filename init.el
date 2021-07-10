@@ -890,7 +890,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (add-to-list 'default-frame-alist '(left . 0))
     ;(set-default line-spacing 0)
 
-    (setq ns-alternate-modifier 'meta
+    (setq ns-alternate-modifier 'super
 	  ns-command-modifier 'meta
 	  ns-right-command-modifier 'super
 	  ns-right-alternate-modifier 'hyper
