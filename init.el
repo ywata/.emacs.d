@@ -377,64 +377,33 @@
 (use-package company-coq
   :defer t)
 
-;(customize-set-variable 'idris-interpreter-path "idris")
-;(customize-set-variable 'idris-command-line-option-functions nil)
-;(customize-set-variable 'idris-command-line-option-functions '((lambda () (list "-p" "base" "-p" "contrib" "-p" "network" ))))
+(progn
+  (use-package idris-mode
+    :load-path "site-lisp/idris-mode"
+    :mode "\\.idr"
+    :config
+    (customize-set-variable 'idris-interpreter-path "~/.idris2/bin/idris2")
+    
+    (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t)
+    (customize-set-variable 'idris-command-line-option-functions
+			    '((lambda () (list
+					  "-p base" "-p idris2" "-p contrib" "-p network" "--no-color")))))
+  (use-package lsp-idris2
+    :load-path "site-lisp/lsp-idris2"
+    :config
+    (add-hook 'idris-mode-hook #'lsp)
+    (add-hook 'idris-literate-mode-hook #'lsp)
+    ;;    (custom-set-variables '(lsp-idris2-server-path "path to idris2-lsp in your environment")))
+    (custom-set-variables '(lsp-idris2-server-path "/Users/ywata/.idris2/bin/idris2-lsp")))
+  (use-package lsp-mode
+      :ensure t
+      :hook (idris-mode . lsp)
+      :commands lsp))
+  
 
-					;(idris-compute-flags)
-(use-package lsp-mode
-  :ensure t
-  :hook (idris-mode . lsp)
-  :commands lsp)
-
-(cond
- (t
-  ;; This is for idris-mode
-  (progn
-    (use-package idris-mode
-      :load-path "site-lisp/idris-mode"
-      :mode "\\.idr"
-      :config
-      (customize-set-variable 'idris-interpreter-path "~/.idris2/bin/idris2")
-      
-      (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t)
-      (customize-set-variable 'idris-command-line-option-functions
-			      '((lambda () (list
-					    "-p base" "-p idris2" "-p contrib" "-p network" "--no-color")))))
-    (use-package lsp-idris2
-      :load-path "site-lisp/lsp-idris2"
-      :config
-      (add-hook 'idris-mode-hook #'lsp)
-      (add-hook 'idris-literate-mode-hook #'lsp)
-      ;;    (custom-set-variables '(lsp-idris2-server-path "path to idris2-lsp in your environment")))
-      (custom-set-variables '(lsp-idris2-server-path "/Users/ywata/lang/idris/idris2-lsp/build/exec/idris2-lsp")))  
-    (use-package helm-idris
-      :defer t
-      :ensure t)))
-  (t
-   ;; This is for idris2-mode   
-   (progn
-     (use-package idris-mode
-       :load-path "site-lisp/idris-mode"
-       :mode "\\.idr"
-       :config
-       (customize-set-variable 'idris-interpreter-path "~/.idris2/bin/idris2")
-       
-       (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t)
-       (customize-set-variable 'idris-command-line-option-functions
-			       '((lambda () (list
-					     "-p base" "-p idris2" "-p contrib" "-p network" "--no-color")))))
-     (use-package lsp-idris2
-       :load-path "site-lisp/lsp-idris2"
-       :config
-       (add-hook 'idris-mode-hook #'lsp)
-       (add-hook 'idris-literate-mode-hook #'lsp)
-       ;;    (custom-set-variables '(lsp-idris2-server-path "path to idris2-lsp in your environment")))
-       (custom-set-variables '(lsp-idris2-server-path "/Users/ywata/lang/idris/idris2-lsp/build/exec/idris2-lsp")))  
-     (use-package helm-idris
-       :defer t
-       :ensure t))))
-
+(use-package helm-idris
+  :defer t
+  :ensure t)
 
 (use-package elm-mode
   :defer t
