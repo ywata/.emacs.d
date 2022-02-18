@@ -84,7 +84,7 @@
     (menu-bar-mode 1)
     (tool-bar-mode -1)))
 
-
+(show-paren-mode)
 (setq linum-delay t)
 (defadvice linum-schedule (around my-linum-schedule () activate)
   (run-with-idle-timer 1.0 nil #'linum-update-current))
@@ -105,9 +105,9 @@
 ;(add-to-list 'package-archives
 ;	     '("elpa" . "http://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives
-	     '("org" . "http://orgmode.org/elpa/"))
+	     '("org" . "https://orgmode.org/elpa/"))
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/"))
+	     '("melpa" . "https://melpa.org/packages/"))
 ;;(add-to-list 'package-archives
 ;;("melpa-stable" . "http://stable.melpa.org/packages/")
 
@@ -145,6 +145,18 @@
 (use-package view-window
   :load-path "site-lisp/view-window"
   :demand)
+
+(use-package flycheck
+  :demand
+  :config (global-flycheck-mode t))
+
+(use-package magit-section
+  :ensure t)
+
+(use-package lean4-mode
+  :load-path "site-lisp/lean4-mode")
+
+
 
 ;(use-package font-tool
 ;  :load-path "site-lisp/font-tool"
@@ -214,12 +226,12 @@
 ;  (add-hook 'haskell-mode-hook 'electric-pair-mode))
 
 
-(use-package projectile
-  :ensure t
-  :config
-  (add-hook 'haskell-mode-hook #'projectile-mode)
-;  (add-hook 'jdee-mode-hook    #'projectile-mode)
-  )
+;; (use-package projectile
+;;   :ensure t
+;;   :config
+;; ;  (add-hook 'haskell-mode-hook #'projectile-mode)
+;; ;  (add-hook 'jdee-mode-hook    #'projectile-mode)
+;;   )
 
 ;;(use-package malabar-mode
 ;;  :ensure t)
@@ -383,22 +395,26 @@
     :mode "\\.idr"
     :config
     (customize-set-variable 'idris-interpreter-path "~/.idris2/bin/idris2")
-    
+    (setq idris-words-of-encouragement '(""))
+;    (setq idris-log-events t)
     (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t)
-    (customize-set-variable 'idris-command-line-option-functions
-			    '((lambda () (list
-					  "-p base" "-p idris2" "-p contrib" "-p network" "--no-color")))))
-  (use-package lsp-idris2
-    :load-path "site-lisp/lsp-idris2"
-    :config
-    (add-hook 'idris-mode-hook #'lsp)
-    (add-hook 'idris-literate-mode-hook #'lsp)
-    ;;    (custom-set-variables '(lsp-idris2-server-path "path to idris2-lsp in your environment")))
-    (custom-set-variables '(lsp-idris2-server-path "/Users/ywata/.idris2/bin/idris2-lsp")))
-  (use-package lsp-mode
-      :ensure t
-      :hook (idris-mode . lsp)
-      :commands lsp))
+;    (setq idris-load-packages '("idris" "network" "contrib"))
+;;    (customize-set-variable 'idris-command-line-option-functions
+;;			    '((lambda () (list
+;;					  "-p base" "-p idris2" "-p contrib" "-p network" "--no-color"))))
+    )
+  ;; (use-package lsp-idris2
+  ;;   :load-path "site-lisp/lsp-idris2"
+  ;;   :config
+  ;;   (add-hook 'idris-mode-hook #'lsp)
+  ;;   (add-hook 'idris-literate-mode-hook #'lsp)
+  ;;   ;;    (custom-set-variables '(lsp-idris2-server-path "path to idris2-lsp in your environment")))
+  ;;   (custom-set-variables '(lsp-idris2-server-path "/Users/ywata/.idris2/bin/idris2-lsp")))
+  ;; (use-package lsp-mode
+  ;;     :ensure t
+  ;;     :hook (idris-mode . lsp)
+  ;;     :commands lsp)
+  )
   
 
 (use-package helm-idris
@@ -423,8 +439,6 @@
 ;;  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
   (define-key lsp-ui-imenu-mode-map (kbd "C-f") 'lsp-ui-imenu--next-kind)
   (define-key lsp-ui-imenu-mode-map (kbd "C-b") 'lsp-ui-imenu--prev-kind))
-
-  
 
 
 ;; Historical haskell-mode settings
@@ -467,10 +481,6 @@ a `locate-dominating-file' argument and a command line."
  (nil
   (progn
       ;; LSP
-      (use-package flycheck
-	:ensure t
-	:config
-	(global-flycheck-mode t))
       (use-package yasnippet
 	:ensure t)
       (use-package spinner
@@ -530,7 +540,7 @@ a `locate-dominating-file' argument and a command line."
       :config
       (add-hook 'haskell-mode-hook #'lsp)
       (add-hook 'haskell-literate-mode-hook #'lsp)
-      (setq lsp-haskell-server-path "~/.local/bin/ghcide")
+      (setq lsp-haskell-server-path "~/.nix-profile/bin/haskell-languager-server-wrapper")
       (setq lsp-haskell-server-args '())
 ;;      (setq lsp-log-io t)
       )))
@@ -542,10 +552,6 @@ a `locate-dominating-file' argument and a command line."
 ;;      (global-flycheck-mode t))
 ;;    (use-package yasnippet
     ;;      :ensure t)
-    (use-package lsp-ui
-      :ensure t
-      :commands lsp-ui-mode)
-    
     (use-package lsp-haskell
       :ensure t
       :config
@@ -573,8 +579,6 @@ a `locate-dominating-file' argument and a command line."
       (setq lsp-log-io t)))))
 
 ;;(use-package haskell-snippets
-;;  :ensure t)
-
 (use-package subword
   :ensure t
   :defer t
@@ -584,20 +588,26 @@ a `locate-dominating-file' argument and a command line."
   (add-hook 'haskell-mode-hook 'subword-mode))
 
 
-;(use-package magit
-;  :ensure
-;  :defer 3
-;  :if (display-graphic-p)
-;  :init
+(use-package magit
+  :ensure
+  :if (display-graphic-p)
+  :init
 ;  (add-hook 'magit-mode-hook 'hl-line-mode)
-;  :config
-;  (setenv "GIT_PAGER" ""))
+  :config
+  (setenv "GIT_PAGER" ""))
+
+(defun company-abort-and-delete-backward-char ()
+  (interactive)
+  (progn
+    (company-abort)
+    (delete-backward-char 1)))
 
 (with-eval-after-load 'company
   (define-key company-active-map (kbd "M-n") nil)
   (define-key company-active-map (kbd "M-p") nil)
   (define-key company-active-map (kbd "C-n") #'company-select-next-or-abort)
-  (define-key company-active-map (kbd "C-p") #'company-select-previous-or-abort))
+  (define-key company-active-map (kbd "C-p") #'company-select-previous-or-abort)
+  (define-key company-active-map (kbd "C-h") #'company-abort-and-delete-backward-char))
 
 ;;(use-package git-messenger
 ;  :ensure t
@@ -799,7 +809,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 					; -- agda
 
 (defun agda2-mode-path ()
-  "Load agda-mode"
+  "Locate agda mode directory"
  (let* ((coding-system-for-read 'utf-8)
 	(agda-mode-el (shell-command-to-string "agda-mode locate"))
 	(agda-mode-el- (shell-command-to-string (expand-file-name "~/.local/bin/agda-mode locate"))))
@@ -809,11 +819,11 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 	  (file-name-directory agda-mode-el-))
 	 (nil "~/.emacs.d/site-lisp/"))))
 
+
 (defmacro use-package-agda2 (agda2-path)
   "Use use-package macro dynamically."
   `(use-package agda2-mode
       :load-path ,agda2-path
-      :ensure t
       :config
       (progn
 	(define-key agda2-mode-map (kbd "C-c .") #'quail-show-key)
@@ -907,5 +917,3 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (setq mouse-wheel-tilt-scroll t))
 
 (put 'downcase-region 'disabled nil)
-
-;;;
