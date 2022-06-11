@@ -95,6 +95,10 @@
 ;;; Code:
 (require 'package)
 
+(eval-and-compile
+  (setq use-package-always-ensure t
+        use-package-expand-minimally t))
+
 
 ;(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
 ;                    (not (gnutls-available-p))))
@@ -119,23 +123,16 @@
 
 
 (require 'use-package)
-(use-package ox-gfm
-  :ensure t
-  :defer t)
-(use-package ox-qmd
-  :defer t
-  :ensure t)
+(use-package ox-gfm  :defer t)
+(use-package ox-qmd :defer t)
 
 (use-package gnuplot
-  :defer t
-  :ensure t
   :config
-  (add-to-list 'exec-path "~/.nix-profile/bin/")
-  )
+  (add-to-list 'exec-path "~/.nix-profile/bin/"))
 
 (use-package org-sticky-header
-  :defer t
-  :ensure t)
+  :defer t)
+
 ;(use-package org-recent-headings
 ;  :ensure)
 ;(use-package helm-org-rifle
@@ -150,11 +147,15 @@
   :demand
   :config (global-flycheck-mode t))
 
-(use-package magit-section
-  :ensure t)
+;(use-package magit-section
+;  :ensure t)
 
 (use-package lean4-mode
   :load-path "site-lisp/lean4-mode")
+;(use-package lean4-mode
+;  :straight (lean4-mode :type git :host github :repo "leanprover/lean4-mode")
+;  ;; to defer loading the package until required
+;  :ensure)
 
 
 
@@ -190,7 +191,6 @@
 ;  )
 
 (use-package rainbow-delimiters
-  :ensure t
   :demand
   :config
   (add-hook 'haskell-mode-hook #'rainbow-delimiters-mode)
@@ -198,8 +198,7 @@
   )
 
 (use-package open-junk-file
-  :defer t
-  :ensure t)
+  :defer t)
 
 ;;(use-package lean-mode
 ;;  :defer t
@@ -207,7 +206,6 @@
 
 (use-package paredit-everywhere
   :defer t
-  :ensure t
   :config
   )
 
@@ -227,18 +225,18 @@
 
 
 ;; (use-package projectile
-;;   :ensure t
-;;   :config
-;; ;  (add-hook 'haskell-mode-hook #'projectile-mode)
-;; ;  (add-hook 'jdee-mode-hook    #'projectile-mode)
-;;   )
+;;    :ensure t
+;;    :config
+;;    (add-hook 'haskell-mode-hook #'projectile-mode)
+;;    (add-hook 'jdee-mode-hook    #'projectile-mode)
+;;    (add-hook 'lean4-mode-hook #'projectile-mode)
+;  )
 
 ;;(use-package malabar-mode
 ;;  :ensure t)
 
 (use-package multiple-cursors
   :defer t
-  :ensure t
   :config
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
@@ -258,13 +256,11 @@
 ;;   (add-hook 'haskell-mode-hook #'hindent-mode))
 
 (use-package twittering-mode
-  :defer t
-  :ensure t)
+  :defer t)
+
 
 
 (use-package which-key
-  :defer t
-  :ensure t
   :config
   (which-key-mode 1)
   (which-key-setup-side-window-bottom))
@@ -276,7 +272,6 @@
   (setq recentf-max-saved-items 100))
 
 (use-package helm
-  :ensure t
   :init
   :config
   (helm-mode 1)
@@ -301,7 +296,7 @@
   )
 
 (use-package helm-ls-git
-  :ensure t
+  :ensure
 ;;  :bind
 ;;  (("C-q C-l" . helm-ls-git-ls))
   :config
@@ -349,15 +344,13 @@
 
 
 (use-package coq-commenter
-  :ensure t
   :defer t)
 
-(use-package company-coq
-  :ensure t
-  :defer t
-  :config
-  (company-coq-features/prettify-symbols 'off)
-  (company-coq-features/smart-subscripts 'off))
+;(use-package company-coq
+;  :config
+;  :defer t
+;  (company-coq-features/prettify-symbols 'off)
+;  (company-coq-features/smart-subscripts 'off))
 
 
 (eval-and-compile
@@ -369,7 +362,6 @@
 ;  :commands R)
 
 (use-package proof-general
-  :ensure t
 ;  :load-path "elpa/proof-general-*/generic/"
 ;  :config
 ;  (("<left>" . proof-undo-last-successful-command)
@@ -418,16 +410,13 @@
   
 
 (use-package helm-idris
-  :defer t
-  :ensure t)
+  :defer t)
 
 (use-package elm-mode
   :defer t
-  :ensure t
   :mode "\\.elm")
 (use-package elm-yasnippets
-  :defer t
-  :ensure t)
+  :defer t)
 
 
 
@@ -532,9 +521,9 @@ a `locate-dominating-file' argument and a command line."
       :ensure t
       :hook (haskell-mode . lsp)
       :commands lsp)
-    (use-package lsp-ui
-      :ensure t
-      :commands lsp-ui-mode)
+;;    (use-package lsp-ui
+;;      :ensure t
+;;      :commands lsp-ui-mode)
     (use-package lsp-haskell
       :ensure t
       :config
@@ -553,7 +542,6 @@ a `locate-dominating-file' argument and a command line."
 ;;    (use-package yasnippet
     ;;      :ensure t)
     (use-package lsp-haskell
-      :ensure t
       :config
       (custom-set-variables '(lsp-haskell-server-path "haskell-language-server-wrapper"))
       (custom-set-variables '(lsp-haskell-server-args '()))
@@ -580,7 +568,6 @@ a `locate-dominating-file' argument and a command line."
 
 ;;(use-package haskell-snippets
 (use-package subword
-  :ensure t
   :defer t
   :diminish subword-mode
   :init
@@ -588,13 +575,13 @@ a `locate-dominating-file' argument and a command line."
   (add-hook 'haskell-mode-hook 'subword-mode))
 
 
-(use-package magit
-  :ensure
-  :if (display-graphic-p)
-  :init
-;  (add-hook 'magit-mode-hook 'hl-line-mode)
-  :config
-  (setenv "GIT_PAGER" ""))
+;(use-package magit
+;  :ensure
+;  :if (display-graphic-p)
+;  :init
+;;  (add-hook 'magit-mode-hook 'hl-line-mode)
+;  :config
+;  (setenv "GIT_PAGER" ""))
 
 (defun company-abort-and-delete-backward-char ()
   (interactive)
@@ -651,10 +638,9 @@ a `locate-dominating-file' argument and a command line."
 ;;  )
 (use-package yw-dvroak
   :load-path "site-lisp"
-  :defer 10)
+  :defer t)
 
 (use-package volatile-highlights
-  :ensure t
   :defer t
   :config
   (volatile-highlights-mode))
@@ -707,9 +693,8 @@ a `locate-dominating-file' argument and a command line."
 ;  :defer 10)
 
 (use-package reason-mode
-  :ensure t
-  :defer t
-  :defer 10)
+  :defer t)
+
 
 (cond (nil
 (use-package lingature
@@ -739,7 +724,7 @@ a `locate-dominating-file' argument and a command line."
   (global-ligature-mode t))))
 
 (use-package protobuf-mode
-  :ensure t)
+  :defer t)
 
 ;;(use-package plantuml-mode
 ;;  :ensure
@@ -806,7 +791,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (set-exec-path-from-shell-PATH)
 
 
-					; -- agda
+; -- agda
 
 (defun agda2-mode-path ()
   "Locate agda mode directory"
@@ -916,4 +901,19 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (if (boundp 'mouse-wheel-tilt-scroll)
     (setq mouse-wheel-tilt-scroll t))
 
-(put 'downcase-region 'disabled nil)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(haskell-process-type 'cabal-repl)
+ '(lsp-haskell-server-args 'nil)
+ '(lsp-haskell-server-path "haskell-language-server-wrapper")
+ '(package-selected-packages
+   '(lsp-ui term+ which-key volatile-highlights use-package twittering-mode reason-mode rainbow-delimiters protobuf-mode proof-general projectile paredit-everywhere ox-qmd ox-gfm org-sticky-header open-junk-file multiple-cursors magit lsp-haskell helm-ls-git helm-idris go-mode gnuplot flycheck elm-yasnippets elm-mode eglot ddskk coq-commenter company-coq)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
