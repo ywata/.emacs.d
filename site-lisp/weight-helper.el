@@ -10,6 +10,7 @@
     (goto-char (point-max))
     (insert time "," (format "%.2f" weight) "\n")))
 (setq weight-file (expand-file-name "~/Memo/weight.csv"))
+;;(defvar weight-file (expand-file "~/.weight.csv") "weight record file")
 (defun weight-insert-default-file (weight)
   "Insert weight with timestamp to file"
   (interactive "nWeight: ")
@@ -20,4 +21,5 @@
 	(find-file weight-file)
 	(goto-char (point-max))
 	(insert time "," (format "%.2f" weight) "\n")
+	(end-of-line 0)
 	(save-buffer)))))
