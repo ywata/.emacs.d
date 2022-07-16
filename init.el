@@ -149,14 +149,20 @@
 
 ;(use-package magit-section
 ;  :ensure t)
-
+(use-package lsp-mode
+  :ensure t)
+(use-package magit-section
+  :ensure t)
 (use-package lean4-mode
   :load-path "site-lisp/lean4-mode")
+
+
 ;(use-package lean4-mode
 ;  :straight (lean4-mode :type git :host github :repo "leanprover/lean4-mode")
 ;  ;; to defer loading the package until required
 ;  :ensure)
 
+;(add-to-list 'eglot-server-programs '(lean4-mode . ("foo-language-server" "--args")))
 
 
 ;(use-package font-tool
@@ -236,7 +242,7 @@
 ;;  :ensure t)
 
 (use-package multiple-cursors
-  :defer t
+  :ensure t
   :config
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
@@ -256,7 +262,7 @@
 ;;   (add-hook 'haskell-mode-hook #'hindent-mode))
 
 (use-package twittering-mode
-  :defer t)
+  :ensure t)
 
 
 
@@ -407,7 +413,9 @@
   ;;     :hook (idris-mode . lsp)
   ;;     :commands lsp)
   )
-  
+
+;(use-package helm-lsp
+;  :ensure t)
 
 (use-package helm-idris
   :defer t)
@@ -486,7 +494,7 @@ a `locate-dominating-file' argument and a command line."
 ;	(setq lsp-haskell-process-path-hie "ghcide"
 ;	(setq lsp-haskell-process-args-hie '())
 	;; Comment/uncomment this line to see interactions between lsp client/server.
-	(setq lsp-log-io t)
+	(setq lsp-log-io nil)
 	)))
  (nil
     (use-package eglot
@@ -555,8 +563,8 @@ a `locate-dominating-file' argument and a command line."
       (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
 
       (add-hook 'haskell-literate-mode-hook #'lsp)
-      (define-key interactive-haskell-mode-map (kbd "M-.") 'haskell-mode-goto-loc)
-      (define-key interactive-haskell-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
+;;      (define-key interactive-haskell-mode-map (kbd "M-.") 'haskell-mode-goto-loc)
+;;      (define-key interactive-haskell-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
       
       (setq lsp-prefer-flymake nil)
       
@@ -897,6 +905,26 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (mac-auto-ascii-mode 1)
     (x-focus-frame nil)
 ))
+;; server start for emacs-client
+(when window-system                       ; GUI時
+  (require 'server)
+  (unless (eq (server-running-p) 't)
+    (server-start)
+
+    (defun iconify-emacs-when-server-is-done ()
+      (unless server-clients (iconify-frame)))
+
+    ;; C-x C-cに割り当てる(好みに応じて)
+    ;;(global-set-key (kbd "C-x C-c") 'server-edit)
+    ;; M-x exitでEmacsを終了できるようにする
+    ;;(defalias 'exit 'save-buffers-kill-emacs)
+    ;; 起動時に最小化する
+    ;;;(add-hook 'after-init-hook 'iconify-emacs-when-server-is-done)
+
+    ;; 終了時にyes/noの問い合わせ
+    ;;(setq confirm-kill-emacs 'yes-or-no-p)
+    ))
+
 
 (if (boundp 'mouse-wheel-tilt-scroll)
     (setq mouse-wheel-tilt-scroll t))
@@ -910,7 +938,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
  '(lsp-haskell-server-args 'nil)
  '(lsp-haskell-server-path "haskell-language-server-wrapper")
  '(package-selected-packages
-   '(lsp-ui term+ which-key volatile-highlights use-package twittering-mode reason-mode rainbow-delimiters protobuf-mode proof-general projectile paredit-everywhere ox-qmd ox-gfm org-sticky-header open-junk-file multiple-cursors magit lsp-haskell helm-ls-git helm-idris go-mode gnuplot flycheck elm-yasnippets elm-mode eglot ddskk coq-commenter company-coq)))
+   '(protobuf-mode reason-mode volatile-highlights which-key use-package twittering-mode term+ rainbow-delimiters proof-general paredit-everywhere ox-qmd ox-gfm org-sticky-header open-junk-file multiple-cursors magit-section lsp-ui lsp-haskell helm-ls-git helm-idris haskell-mode go-mode gnuplot flycheck elm-yasnippets elm-mode eglot coq-commenter company-coq)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
