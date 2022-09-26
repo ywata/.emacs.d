@@ -106,8 +106,8 @@
 ;  (add-to-list 'package-archives
 ;               (cons "melpa" (concat proto "://melpa.org/packages/")) t))
 
-;(add-to-list 'package-archives
-;	     '("elpa" . "http://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives
+	     '("elpa" . "http://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives
 	     '("org" . "https://orgmode.org/elpa/"))
 (add-to-list 'package-archives
@@ -150,11 +150,39 @@
 ;(use-package magit-section
 ;  :ensure t)
 (use-package lsp-mode
-  :ensure t)
+  :ensure t
+  :config
+  ;;https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
+  (progn
+  (setq lsp-enable-symbol-highlighting nil)
+  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-doc-show-with-cursor nil)
+  (setq lsp-ui-doc-show-with-mouse nil)
+  (setq lsp-lens-enable nil)
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-sideline-show-code-actions nil)
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-sideline-show-hover nil)
+  (setq lsp-modeline-code-actions-enable nil)
+  (setq lsp-diagnostics-provider :none)
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-sideline-show-diagnostics nil)
+  (setq lsp-eldoc-enable-hover nil)
+  (setq lsp-modeline-diagnostics-enable nil)
+  (setq lsp-signature-auto-activate nil) ;; you could manually request them via `lsp-signature-activate`
+  (setq lsp-signature-render-documentation nil)
+  (setq lsp-completion-provider :none)
+  (setq lsp-completion-show-detail nil)
+  (setq lsp-completion-show-kind nil))
+
+  )
 (use-package magit-section
   :ensure t)
 (use-package lean4-mode
   :load-path "site-lisp/lean4-mode")
+
+
 
 
 ;(use-package lean4-mode
@@ -262,7 +290,10 @@
 ;;   (add-hook 'haskell-mode-hook #'hindent-mode))
 
 (use-package twittering-mode
-  :ensure t)
+  :ensure t
+  :config
+  (setq twittering-reverse-mode t)
+  )
 
 
 
@@ -422,6 +453,8 @@
 
 (use-package elm-mode
   :defer t
+  :config
+  (add-hook 'elm-mode-hook #'lsp)
   :mode "\\.elm")
 (use-package elm-yasnippets
   :defer t)
@@ -945,3 +978,4 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'downcase-region 'disabled nil)
