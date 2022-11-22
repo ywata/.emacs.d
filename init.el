@@ -136,7 +136,7 @@
 ;(use-package org-recent-headings
 ;  :ensure)
 ;(use-package helm-org-rifle
-;  :ensure t)
+;  :ensure)
 
 
 (use-package view-window
@@ -148,39 +148,66 @@
   :config (global-flycheck-mode t))
 
 ;(use-package magit-section
-;  :ensure t)
+					;  :ensure t)
 (use-package lsp-mode
-  :ensure t
+  :demand
   :config
   ;;https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
   (progn
-  (setq lsp-enable-symbol-highlighting nil)
-  (setq lsp-ui-doc-enable nil)
-  (setq lsp-ui-doc-show-with-cursor nil)
-  (setq lsp-ui-doc-show-with-mouse nil)
-  (setq lsp-lens-enable nil)
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-ui-sideline-enable nil)
-  (setq lsp-ui-sideline-show-code-actions nil)
-  (setq lsp-ui-sideline-enable nil)
-  (setq lsp-ui-sideline-show-hover nil)
-  (setq lsp-modeline-code-actions-enable nil)
-  (setq lsp-diagnostics-provider :none)
-  (setq lsp-ui-sideline-enable nil)
-  (setq lsp-ui-sideline-show-diagnostics nil)
-  (setq lsp-eldoc-enable-hover nil)
-  (setq lsp-modeline-diagnostics-enable nil)
-  (setq lsp-signature-auto-activate nil) ;; you could manually request them via `lsp-signature-activate`
-  (setq lsp-signature-render-documentation nil)
-  (setq lsp-completion-provider :none)
-  (setq lsp-completion-show-detail nil)
-  (setq lsp-completion-show-kind nil))
-
+    (setq gc-cons-threshold 30000000)
+    (setq read-process-output-max 10000000)
+    (setq lsp-idle-delay 0.2)
+    (setq lsp-enable-symbol-highlighting nil)
+    (setq lsp-ui-doc-enable nil)
+    (setq lsp-ui-doc-show-with-cursor nil)
+    (setq lsp-ui-doc-show-with-mouse nil)
+    (setq lsp-lens-enable nil)
+    (setq lsp-headerline-breadcrumb-enable nil)
+    (setq lsp-ui-sideline-enable nil)
+    (setq lsp-ui-sideline-show-code-actions nil)
+    (setq lsp-ui-sideline-enable nil)
+    (setq lsp-ui-sideline-show-hover nil)
+    (setq lsp-modeline-code-actions-enable nil)
+    (setq lsp-diagnostics-provider :none)
+    (setq lsp-ui-sideline-enable nil)
+    (setq lsp-ui-sideline-show-diagnostics nil)
+    (setq lsp-eldoc-enable-hover nil)
+    (setq lsp-modeline-diagnostics-enable nil)
+    (setq lsp-signature-auto-activate nil) ;; you could manually request them via `lsp-signature-activate`
+    (setq lsp-signature-render-documentation nil)
+    (setq lsp-completion-provider :none)
+    (setq lsp-completion-show-detail nil)
+    (setq lsp-completion-show-kind nil))
   )
 (use-package magit-section
-  :ensure t)
+  :demand)
 (use-package lean4-mode
+  :demand
   :load-path "site-lisp/lean4-mode")
+
+(use-package rustic
+  :demand
+  :config
+  (setq rustic-lsp-client 'eglot)  
+  (custom-set-variables
+   '(rustic-format-trigger 'on-save)))
+
+
+;(use-package eglot
+;  :ensure t)
+;(use-package cargo-mode
+;  :config
+;  (add-hook 'rust-mode-hook 'cargo-minor-mode))
+
+;; (use-package rust-mode
+;;   :demand
+;;   :config
+;;   (add-hook 'rust-mode-hook
+;;             (lambda () (setq indent-tabs-mode nil)))
+;;   (define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
+;;   (define-key rust-mode-map (kbd "C-c C-t") 'rust-test)
+;;   (add-hook 'rust-mode-hook #'lsp)  
+;;  )
 
 
 
@@ -232,14 +259,14 @@
   )
 
 (use-package open-junk-file
-  :defer t)
+  :demand)
 
 ;;(use-package lean-mode
 ;;  :defer t
 ;;  :ensure t)
 
 (use-package paredit-everywhere
-  :defer t
+  :demand
   :config
   )
 
@@ -270,7 +297,7 @@
 ;;  :ensure t)
 
 (use-package multiple-cursors
-  :ensure t
+  :demand
   :config
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
@@ -281,8 +308,8 @@
          ("M-<down-mouse-1>" . mc/add-cursor-on-click)))
 
 
-(use-package term+
-  :defer t)
+;(use-package term+
+;  :defer t)
 ;; (use-package hindent
 ;;   :defer 3
 ;;   :init
@@ -290,7 +317,7 @@
 ;;   (add-hook 'haskell-mode-hook #'hindent-mode))
 
 (use-package twittering-mode
-  :ensure t
+  :demand
   :config
   (setq twittering-reverse-mode t)
   )
@@ -298,6 +325,7 @@
 
 
 (use-package which-key
+  :demand
   :config
   (which-key-mode 1)
   (which-key-setup-side-window-bottom))
@@ -333,7 +361,7 @@
   )
 
 (use-package helm-ls-git
-  :ensure
+  :demand
 ;;  :bind
 ;;  (("C-q C-l" . helm-ls-git-ls))
   :config
@@ -381,7 +409,7 @@
 
 
 (use-package coq-commenter
-  :defer t)
+  :demand)
 
 ;(use-package company-coq
 ;  :config
@@ -399,6 +427,7 @@
 ;  :commands R)
 
 (use-package proof-general
+  :demand
 ;  :load-path "elpa/proof-general-*/generic/"
 ;  :config
 ;  (("<left>" . proof-undo-last-successful-command)
@@ -414,12 +443,13 @@
       (pretify-symbols-mode nil)))
 
 
-(load "pg-ssr.el")
-(use-package company-coq
-  :defer t)
+;(load "pg-ssr.el")
+;(use-package company-coq
+;  :defer t)
 
 (progn
   (use-package idris-mode
+    :demand
     :load-path "site-lisp/idris-mode"
     :mode "\\.idr"
     :config
@@ -449,10 +479,10 @@
 ;  :ensure t)
 
 (use-package helm-idris
-  :defer t)
+  :demand)
 
 (use-package elm-mode
-  :defer t
+  :demand
   :config
   (add-hook 'elm-mode-hook #'lsp)
   :mode "\\.elm")
@@ -462,7 +492,7 @@
 
 
 (use-package lsp-ui
-  :ensure t
+  :demand
   :commands lsp-ui-mode
   :config
 ;;  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
@@ -559,12 +589,12 @@ a `locate-dominating-file' argument and a command line."
       (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
       )
     (use-package lsp-mode
-      :ensure t
+      :ensure
       :hook (haskell-mode . lsp)
       :commands lsp)
-;;    (use-package lsp-ui
-;;      :ensure t
-;;      :commands lsp-ui-mode)
+    (use-package lsp-ui
+      :ensure
+      :commands lsp-ui-mode)
     (use-package lsp-haskell
       :ensure t
       :config
@@ -583,6 +613,7 @@ a `locate-dominating-file' argument and a command line."
 ;;    (use-package yasnippet
     ;;      :ensure t)
     (use-package lsp-haskell
+      :demand
       :config
       (custom-set-variables '(lsp-haskell-server-path "haskell-language-server-wrapper"))
       (custom-set-variables '(lsp-haskell-server-args '()))
@@ -609,7 +640,7 @@ a `locate-dominating-file' argument and a command line."
 
 ;;(use-package haskell-snippets
 (use-package subword
-  :defer t
+  :demand
   :diminish subword-mode
   :init
   (setq haskell-interactive-popup-errors nil)
@@ -677,12 +708,12 @@ a `locate-dominating-file' argument and a command line."
 ;;  :config
 ;;  (set-input-method 'programmer-dvorak)
 ;;  )
-(use-package yw-dvroak
-  :load-path "site-lisp"
-  :defer t)
+;(use-package yw-dvroak
+;  :load-path "site-lisp"
+;  :demand)
 
 (use-package volatile-highlights
-  :defer t
+  :demand
   :config
   (volatile-highlights-mode))
 
@@ -734,7 +765,7 @@ a `locate-dominating-file' argument and a command line."
 ;  :defer 10)
 
 (use-package reason-mode
-  :defer t)
+  :demand)
 
 
 (cond (nil
@@ -765,7 +796,7 @@ a `locate-dominating-file' argument and a command line."
   (global-ligature-mode t))))
 
 (use-package protobuf-mode
-  :defer t)
+  :demand)
 
 ;;(use-package plantuml-mode
 ;;  :ensure
@@ -862,7 +893,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (use-package-agda2 (agda2-path))
 
 (use-package go-mode
-  :ensure t)
+  :demand)
 
 
 (set-face-attribute 'default nil
@@ -962,20 +993,4 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (if (boundp 'mouse-wheel-tilt-scroll)
     (setq mouse-wheel-tilt-scroll t))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(haskell-process-type 'cabal-repl)
- '(lsp-haskell-server-args 'nil)
- '(lsp-haskell-server-path "haskell-language-server-wrapper")
- '(package-selected-packages
-   '(protobuf-mode reason-mode volatile-highlights which-key use-package twittering-mode term+ rainbow-delimiters proof-general paredit-everywhere ox-qmd ox-gfm org-sticky-header open-junk-file multiple-cursors magit-section lsp-ui lsp-haskell helm-ls-git helm-idris haskell-mode go-mode gnuplot flycheck elm-yasnippets elm-mode eglot coq-commenter company-coq)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 (put 'downcase-region 'disabled nil)
