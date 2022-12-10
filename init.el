@@ -188,7 +188,10 @@
 (use-package rustic
   :demand
   :config
-  (setq rustic-lsp-client 'eglot)  
+  (setq rustic-lsp-client 'eglot)
+  (add-hook 'rustic-mode-hook #'company-mode)  
+  (add-hook 'rustic-mode-hook #'cargo-minor-mode)
+;;  (add-hook 'rustic-before-compilation-hook #'save-buffer)
   (custom-set-variables
    '(rustic-format-trigger 'on-save)))
 
@@ -993,4 +996,20 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (if (boundp 'mouse-wheel-tilt-scroll)
     (setq mouse-wheel-tilt-scroll t))
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(haskell-process-type 'cabal-repl)
+ '(lsp-haskell-server-args 'nil)
+ '(lsp-haskell-server-path "haskell-language-server-wrapper")
+ '(package-selected-packages
+   '(cargo-mode protobuf-mode reason-mode volatile-highlights which-key use-package twittering-mode term+ rainbow-delimiters proof-general paredit-everywhere ox-qmd ox-gfm org-sticky-header open-junk-file multiple-cursors magit-section lsp-ui lsp-haskell helm-ls-git helm-idris haskell-mode go-mode gnuplot flycheck elm-yasnippets elm-mode eglot coq-commenter company-coq)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 (put 'downcase-region 'disabled nil)
