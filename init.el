@@ -32,7 +32,7 @@
 (blink-cursor-mode 0)
 
 (setq exec-path (append exec-path '("/usr/local/bin")))
-(setq exec-path (append exec-path '("/Users/ywata/.local/bin")))
+(setq exec-path (append exec-path '("$HOME/.local/bin")))
 
 
 ; flicker(setq redisplay-dont-pause nil)
@@ -506,108 +506,17 @@
 
 ;; Historical haskell-mode settings
 (cond
- (nil
-  (use-package dante
-    :ensure t
-    :after haskell-mode
-    :commands 'dante-mode
-    :init
-    (defcustom dante-methods-alist
-      `((styx "styx.yaml" ("styx" "repl" dante-target))
-	(stack "stack.yaml" ("stack" "repl" dante-target))
-	(bare-cabal ,(lambda (d) (directory-files d t "..cabal$")) ("cabal" "repl" dante-target "--builddir=dist/dante"))
-	(bare-ghci ,(lambda (_) t) ("ghci")))
-      "How to automatically locate project roots and launch GHCi.
-This is an alist from method name to a pair of
-a `locate-dominating-file' argument and a command line."
-      :type '(alist :key-type symbol :value-type (list (choice (string :tag "File to locate") (function :tag "Predicate to use")) (repeat sexp))))
-    ;;(add-hook 'haskell-mode-hook 'flycheck-mode)
-    ;; OR:
-    ;; (add-hook 'haskell-mode-hook 'flymake-mode)
-    (setq haskell-interactive-popup-errors nil)
-    (add-hook 'haskell-mode-hook 'dante-mode)))
- (nil
-   (progn
-     (use-package
-       intero
-       :ensure t
-       :defer 3)
-     (use-package haskell-mode
-       :ensure t
-       :mode "\\.hs"
-       :init
-       ;(add-hook 'haskell-mode-hook 'haskell-doc-mode)
-       ;;  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-       (add-hook 'haskell-mode-hook 'show-paren-mode)
-       ;; (add-hook 'haskell-mode-hook 'haskell-indent-mode) ;; I don't like this.
-       (add-hook 'haskell-mode-hook 'haskell-indentation-mode))))
- (nil
-  (progn
-      ;; LSP
-      (use-package yasnippet
-	:ensure t)
-      (use-package spinner
-	:ensure t)
-      (use-package lsp-mode
-	:ensure t
-	:hook (haskell-mode . lsp)
-	:commands lsp)
-      
-      (use-package lsp-haskell
-	:ensure t
-	:config
-	;;	(setq lsp-haskell-process-path-hie "hie-wrapper")
-;	(setq lsp-haskell-process-path-hie "ghcide"
-;	(setq lsp-haskell-process-args-hie '())
-	;; Comment/uncomment this line to see interactions between lsp client/server.
-	(setq lsp-log-io nil)
-	)))
- (nil
+ (t
     (use-package eglot
       :ensure t
       :config
       (setq haskell-interactive-popup-errors nil)
-      (add-to-list 'eglot-server-programs '(haskell-mode . ("ghcide" "--lsp")))))
- (nil
-  (use-package flycheck-haskell
-    :ensure t
-    :config
-    ;;  (with-eval-after-load 'intero
-    ;;    (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
-    (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
-    (add-hook 'haskell-mode-hook #'interactive-haskell-mode)))
- (nil
-  (progn
-    (use-package haskell-mode
-      :ensure t
-      :mode "\\.hs"
-      :config
-      (setq haskell-compile-cabal-build-command "cabal new-build")
-      (interactive-haskell-mode t)
-      (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
-      (add-hook 'haskell-mode-hook #'show-paren-mode)
-      (add-hook 'haskell-mode-hook #'lsp)
-      (add-hook 'haskell-literate-mode-hook #'lsp)
+      (define-key ctl-Q-keymap (kbd "C-e") 'flymake-goto-next-error)
+      (custom-set-variables '(haskell-process-type 'cabal-repl))
       (add-hook 'haskell-mode-hook #'haskell-indentation-mode)
       (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
-      )
-    (use-package lsp-mode
-      :ensure
-      :hook (haskell-mode . lsp)
-      :commands lsp)
-    (use-package lsp-ui
-      :ensure
-      :commands lsp-ui-mode)
-    (use-package lsp-haskell
-      :ensure t
-      :config
-      (add-hook 'haskell-mode-hook #'lsp)
-      (add-hook 'haskell-literate-mode-hook #'lsp)
-      (setq lsp-haskell-server-path "~/.nix-profile/bin/haskell-languager-server-wrapper")
-      (setq lsp-haskell-server-args '())
-;;      (setq lsp-log-io t)
-      )))
- (t
+      (add-to-list 'eglot-server-programs '(haskell-mode . ("haskell-language-server-wrapper" "lsp")))))
+ (nil
   (progn
 ;;    (use-package flycheck
 ;;      :ensure t
@@ -621,7 +530,7 @@ a `locate-dominating-file' argument and a command line."
       (custom-set-variables '(lsp-haskell-server-path "haskell-language-server-wrapper"))
       (custom-set-variables '(lsp-haskell-server-args '()))
       ;;https://github.com/serras/emacs-haskell-tutorial/blob/master/tutorial.md
-      (custom-set-variables '(haskell-process-type 'cabal-repl))
+      
       ;;(custom-set-variables '(haskell-process-type 'stack-ghci))
       
       ;; https://github.com/emacs-lsp/lsp-haskell
@@ -640,7 +549,6 @@ a `locate-dominating-file' argument and a command line."
       ;;(add-hook 'haskell-mode-hook #'interactive-haskell-mode)
       (add-hook 'haskell-mode-hook #'show-paren-mode)
       (setq lsp-log-io t)))))
-
 ;;(use-package haskell-snippets
 (use-package subword
   :demand
@@ -893,7 +801,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 	  (if (boundp 'agda2-mode-map)
 	      (define-key agda2-mode-map (kbd "C-c C-i") #'agda2-insert-commented-region))))))
 (setq agda2-path (agda2-mode-path))
-(use-package-agda2 (agda2-path))
+;(use-package-agda2 (agda2-path))
 
 (use-package go-mode
   :demand)
@@ -951,17 +859,20 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (when (and darwin-p (or ns-p mac-p))
   (progn
     (set-fontset-font "fontset-default" nil
-                      (font-spec :name "DejaVu Sans"))
+                      (font-spec :name "PlemolJP Console NFJ-20"))
 ;    (add-to-list 'default-frame-alist
 ; 		 '(font . "-*-*-*-*-*-*-16-*-*-*-m-*-iso10646-1"))
 ;    (add-to-list 'default-frame-alist
 ; 		 '(font . "-*-*-*-*-*-*-20-*-*-*-*-*-*-*"))
-    (add-to-list 'default-frame-alist '(width . 124))
+    (add-to-list 'default-frame-alist '(width . 113))
     (add-to-list 'default-frame-alist '(height . 50))
     (add-to-list 'default-frame-alist '(top . 0))
     (add-to-list 'default-frame-alist '(left . 0))
     ;(set-default line-spacing 0)
-
+    (setq default-frame-alist
+	  (append (list
+		   '(font . "PlemolJP Console NFJ-20"))
+		  default-frame-alist))
     (setq ns-alternate-modifier 'super
 	  ns-command-modifier 'meta
 	  ns-right-command-modifier 'super
@@ -971,7 +882,9 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
   (progn
     (mac-auto-ascii-mode 1)
     (x-focus-frame nil)
-))
+    ))
+
+
 ;; server start for emacs-client
 (when window-system                       ; GUI時
   (require 'server)
@@ -1002,8 +915,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(haskell-process-type 'cabal-repl)
- '(lsp-haskell-server-args 'nil)
- '(lsp-haskell-server-path "haskell-language-server-wrapper")
  '(package-selected-packages
    '(cargo-mode protobuf-mode reason-mode volatile-highlights which-key use-package twittering-mode term+ rainbow-delimiters proof-general paredit-everywhere ox-qmd ox-gfm org-sticky-header open-junk-file multiple-cursors magit-section lsp-ui lsp-haskell helm-ls-git helm-idris haskell-mode go-mode gnuplot flycheck elm-yasnippets elm-mode eglot coq-commenter company-coq)))
 (custom-set-faces
