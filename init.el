@@ -58,16 +58,10 @@
       (define-key ctl-Q-keymap (kbd "\C-e") #'eval-last-sexp)
       (define-key ctl-Q-keymap (kbd "\C-e") #'next-error)
 
-;;      (define-key ctl-Q-keymap (kbd "\C-n") #'view-window-next-buffer)
-;;      (define-key ctl-Q-keymap (kbd "\C-p") #'view-window-prev-buffer)
       (define-key ctl-Q-keymap (kbd "\C-n") #'bs-cycle-next)
       (define-key ctl-Q-keymap (kbd "\C-p") #'bs-cycle-previous)
-      (define-key global-map (kbd "M-]") #'bs-cycle-next)
-      (define-key global-map (kbd "M-[") #'bs-cycle-previous)
       (define-key ctl-Q-keymap (kbd "\C-s") #'whitespace-mode)
       (define-key ctl-Q-keymap (kbd "\C-w") #'weight-insert-default-file)
-;      (define-key ctl-Q-keymap (kbd "\C-s") #'helm-swoop)
-;      (define-key ctl-Q-keymap (kbd "s") #'avy-isearch)
 
       (define-key ctl-Q-keymap (kbd "\C-q") #'quoted-insert)
       (setq outline-minor-mode-prefix "\C-c\C-q")
@@ -76,8 +70,8 @@
   (progn
     ))
 
-
-(when (fboundp 'window-system)
+window-system
+(when (and (fboundp 'window-system) window-system)
   (progn
     (dolist (key '("\C-z"))
       (global-unset-key key))
@@ -143,47 +137,49 @@
   :load-path "site-lisp/view-window"
   :demand)
 
+
+
 (use-package flycheck
   :demand
   :config (global-flycheck-mode t))
 
 ;(use-package magit-section
 					;  :ensure t)
-(use-package lsp-mode
-  :demand
-  :config
-  ;;https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
-  (progn
-    (setq gc-cons-threshold 30000000)
-    (setq read-process-output-max 10000000)
-    (setq lsp-idle-delay 0.2)
-    (setq lsp-enable-symbol-highlighting nil)
-    (setq lsp-ui-doc-enable nil)
-    (setq lsp-ui-doc-show-with-cursor nil)
-    (setq lsp-ui-doc-show-with-mouse nil)
-    (setq lsp-lens-enable nil)
-    (setq lsp-headerline-breadcrumb-enable nil)
-    (setq lsp-ui-sideline-enable nil)
-    (setq lsp-ui-sideline-show-code-actions nil)
-    (setq lsp-ui-sideline-enable nil)
-    (setq lsp-ui-sideline-show-hover nil)
-    (setq lsp-modeline-code-actions-enable nil)
-    (setq lsp-diagnostics-provider :none)
-    (setq lsp-ui-sideline-enable nil)
-    (setq lsp-ui-sideline-show-diagnostics nil)
-    (setq lsp-eldoc-enable-hover nil)
-    (setq lsp-modeline-diagnostics-enable nil)
-    (setq lsp-signature-auto-activate nil) ;; you could manually request them via `lsp-signature-activate`
-    (setq lsp-signature-render-documentation nil)
-    (setq lsp-completion-provider :none)
-    (setq lsp-completion-show-detail nil)
-    (setq lsp-completion-show-kind nil))
-  )
-(use-package magit-section
-  :demand)
-(use-package lean4-mode
-  :demand
-  :load-path "site-lisp/lean4-mode")
+;; (use-package lsp-mode
+;;   :demand
+;;   :config
+;;   ;;https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
+;;   (progn
+;;     (setq gc-cons-threshold 30000000)
+;;     (setq read-process-output-max 10000000)
+;;     (setq lsp-idle-delay 0.2)
+;;     (setq lsp-enable-symbol-highlighting nil)
+;;     (setq lsp-ui-doc-enable nil)
+;;     (setq lsp-ui-doc-show-with-cursor nil)
+;;     (setq lsp-ui-doc-show-with-mouse nil)
+;;     (setq lsp-lens-enable nil)
+;;     (setq lsp-headerline-breadcrumb-enable nil)
+;;     (setq lsp-ui-sideline-enable nil)
+;;     (setq lsp-ui-sideline-show-code-actions nil)
+;;     (setq lsp-ui-sideline-enable nil)
+;;     (setq lsp-ui-sideline-show-hover nil)
+;;     (setq lsp-modeline-code-actions-enable nil)
+;;     (setq lsp-diagnostics-provider :none)
+;;     (setq lsp-ui-sideline-enable nil)
+;;     (setq lsp-ui-sideline-show-diagnostics nil)
+;;     (setq lsp-eldoc-enable-hover nil)
+;;     (setq lsp-modeline-diagnostics-enable nil)
+;;     (setq lsp-signature-auto-activate nil) ;; you could manually request them via `lsp-signature-activate`
+;;     (setq lsp-signature-render-documentation nil)
+;;     (setq lsp-completion-provider :none)
+;;     (setq lsp-completion-show-detail nil)
+;;     (setq lsp-completion-show-kind nil))
+;;   )
+;(use-package magit-section
+;  :demand)
+;(use-package lean4-mode
+;  :demand
+;  :load-path "site-lisp/lean4-mode")
 
 (use-package rustic
   :demand
@@ -196,8 +192,6 @@
    '(rustic-format-trigger 'on-save)))
 
 
-;(use-package eglot
-;  :ensure t)
 ;(use-package cargo-mode
 ;  :config
 ;  (add-hook 'rust-mode-hook 'cargo-minor-mode))
@@ -264,10 +258,6 @@
 (use-package open-junk-file
   :demand)
 
-;;(use-package lean-mode
-;;  :defer t
-;;  :ensure t)
-
 (use-package paredit-everywhere
   :demand
   :config
@@ -318,14 +308,6 @@
 ;;   :init
 ;;   (add-to-list 'load-path "~/.local/bin")
 ;;   (add-hook 'haskell-mode-hook #'hindent-mode))
-
-(use-package twittering-mode
-  :demand
-  :config
-  (setq twittering-reverse-mode t)
-  )
-
-
 
 (use-package which-key
   :demand
@@ -387,102 +369,6 @@
 ;  :defer 3)
 ;(use-package )
 
-;; (use-package jdee
-;;   :ensure
-;;   :defer 3
-;;   :config
-;;   (setq jdee-server-dir "~/work/jdee-server/target/"
-;; 	jdee-maven-program "/usr/local/bin/mvn"))
-
-
-;(use-package indium
-;  :ensure)
-
-;; (use-package meghanada
-;;   :ensure t
-;;   :defer t
-;;   :config
-;;   (add-hook 'java-mode-hook
-;; 	    (lambda ()
-;; 	      ;; meghanada-mode on
-;; 	      (meghanada-mode t)
-;;	      (add-hook 'before-save-hook 'delete-trailing-whitespace))))
-
-
-
-
-(use-package coq-commenter
-  :demand)
-
-;(use-package company-coq
-;  :config
-;  :defer t
-;  (company-coq-features/prettify-symbols 'off)
-;  (company-coq-features/smart-subscripts 'off))
-
-
-(eval-and-compile
-  (defun proof-general-site-load-path ()
-    (shell-command "find ~/.emacs.d/elpa -path ess/lisp")))
-
-;(use-package ess-site
-;  :load-path (lambda () (list (ess-site-load-path)))
-;  :commands R)
-
-(use-package proof-general
-  :demand
-;  :load-path "elpa/proof-general-*/generic/"
-;  :config
-;  (("<left>" . proof-undo-last-successful-command)
-;   ("<right>" . proof-assert-next-command-interactive)
-;   ("S-<right>" . proot-goto-point)
-  :init
-  (setq coq-prog-name "/Users/ywata/.opam//4.05.0/bin/coqtop")
-  (setq coq-indent-proofstart 0)
-  (setq coq-indent-modulestart 0)
-  (add-hook 'coq-mode-hook #'company-coq-mode)
-  :config
-  (if (boundp 'pretify-symbols-mode)
-      (pretify-symbols-mode nil)))
-
-
-;(load "pg-ssr.el")
-;(use-package company-coq
-;  :defer t)
-
-(progn
-  (use-package idris-mode
-    :demand
-    :load-path "site-lisp/idris-mode"
-    :mode "\\.idr"
-    :config
-    (customize-set-variable 'idris-interpreter-path "~/.idris2/bin/idris2")
-    (setq idris-words-of-encouragement '(""))
-;    (setq idris-log-events t)
-    (customize-set-variable 'idris-stay-in-current-window-on-compiler-error t)
-;    (setq idris-load-packages '("idris" "network" "contrib"))
-;;    (customize-set-variable 'idris-command-line-option-functions
-;;			    '((lambda () (list
-;;					  "-p base" "-p idris2" "-p contrib" "-p network" "--no-color"))))
-    )
-  ;; (use-package lsp-idris2
-  ;;   :load-path "site-lisp/lsp-idris2"
-  ;;   :config
-  ;;   (add-hook 'idris-mode-hook #'lsp)
-  ;;   (add-hook 'idris-literate-mode-hook #'lsp)
-  ;;   ;;    (custom-set-variables '(lsp-idris2-server-path "path to idris2-lsp in your environment")))
-  ;;   (custom-set-variables '(lsp-idris2-server-path "/Users/ywata/.idris2/bin/idris2-lsp")))
-  ;; (use-package lsp-mode
-  ;;     :ensure t
-  ;;     :hook (idris-mode . lsp)
-  ;;     :commands lsp)
-  )
-
-;(use-package helm-lsp
-;  :ensure t)
-
-(use-package helm-idris
-  :demand)
 
 (use-package elm-mode
   :demand
@@ -494,14 +380,14 @@
 
 
 
-(use-package lsp-ui
-  :demand
-  :commands lsp-ui-mode
-  :config
-;;  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-;;  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-  (define-key lsp-ui-imenu-mode-map (kbd "C-f") 'lsp-ui-imenu--next-kind)
-  (define-key lsp-ui-imenu-mode-map (kbd "C-b") 'lsp-ui-imenu--prev-kind))
+;;(use-package lsp-ui
+;;  :demand
+;;  :commands lsp-ui-mode
+;;  :config
+;;;;  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+;;;;  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+;;  (define-key lsp-ui-imenu-mode-map (kbd "C-f") 'lsp-ui-imenu--next-kind)
+;;  (define-key lsp-ui-imenu-mode-map (kbd "C-b") 'lsp-ui-imenu--prev-kind))
 
 
 ;; Historical haskell-mode settings
@@ -579,61 +465,12 @@
   (define-key company-active-map (kbd "C-p") #'company-select-previous-or-abort)
   (define-key company-active-map (kbd "C-h") #'company-abort-and-delete-backward-char))
 
-;;(use-package git-messenger
-;  :ensure t
-;;  :if (display-graphic-p)
-;;  :bind ("C-x g p" . git-messenger:popup-message))
-
-;;(use-package what-the-commit
-;;  :ensure t
-;;  :bind ("C-x g c" . what-the-commit-insert))
-
-;;(use-package github-browse-file
-;;  :ensure t
-;;  :bind ("C-x g b" . github-browse-file)
-;;  :init (setq github-browse-file-show-line-at-point t))
-
-
-;(use-package helm-migemo
-;; :ensure t)
-;(use-package helm-swoop
-;  :ensure t
-;  :config
-;  )
-
-;(use-package avy
-;  :ensure)
-
-;(use-package ivy
-;  :ensure)
-
-;(use-package ace-isearch
-;  :ensure
-;  :config
-;  (global-ace-isearch-mode 1)
-;  (setq ace-isearch-function #'avy-goto-char)
-;  )
-
-;;(use-package programmer-dvorak
-;;  :ensure
-;;  :config
-;;  (set-input-method 'programmer-dvorak)
-;;  )
-;(use-package yw-dvroak
-;  :load-path "site-lisp"
-;  :demand)
 
 (use-package volatile-highlights
   :demand
   :config
   (volatile-highlights-mode))
 
-;(use-package highlight-symbol
-;  :ensure t
-;  :defer t
-;  :bind (("C-q C-w" . highlight-symbol-at-point))
-;  :config
-;  (add-hook 'haskell-mode-hook #'highlight-symbol-mode))
 
 ;; キーに登録する関数を返す関数
 (defun local-switch-workspace (i)
@@ -659,21 +496,6 @@
 ;;     (persp-switch "1")))
 
 
-;;(use-package live-code-talks
-;;  :ensure)
-
-;; (use-package key-chord
-;;   :ensure
-;;   :defer 10
-;;   :config
-;; ;;  (setq key-chord-two-keys-delay 0.5)
-;; ;;  (key-chord-define-global "gl" #'goto-line)
-;; ;;  (key-chord-define-global "fj" #'goto-line)
-;; )
-;(use-package z3-mode
-;  :ensure t
-;  :defer t
-;  :defer 10)
 
 (use-package reason-mode
   :demand)
@@ -708,55 +530,6 @@
 
 (use-package protobuf-mode
   :demand)
-
-;;(use-package plantuml-mode
-;;  :ensure
-;;  :defer 10)
-
-;;(use-package ssh
-;;  :ensure
-;;  :defer 10)
-;;(use-package ssh-tunnels
-;;  :ensure
-;;  :defer 10)
-
-;;(use-package ox-textile
-;;  :ensure
-;;  :defer 30)
-
-;;(use-package typit
-;;  :ensure
-;;  :defer 30)
-
-
-;(use-package ediprolog
-;  :ensure
-;  :config
-;  (setq prolog-system 'swi
-;	prolog-program-switches '((swi ("-G128M" "-T128M" "-L128M" "-O"))
-;				  (t nil))
-;	prolog-electric-if-then-else-flag t))
-
-;; (use-package ace-jump-mode
-;; 	     :ensure t
-;; 	     :config
-;; 	     (require 'cl)
-;; 	     (add-hook 'haskell-mode-hook #'ace-jump-mode)
-;; 	     (add-hook 'emacs-mode-hook #'ace-jump-mode)
-
-;; 	     (defun add-keys-to-ace-jump-mode (prefix c &optional mode)
-;; 	       (define-key global-map
-;; 		 (read-kbd-macro (concat prefix (string c)))
-;; 		 `(lambda ()
-;; 		    (interactive)
-;; 		    (funcall (if (eq ',mode 'word)
-;; 				 #'ace-jump-word-mode
-;; 			       #'ace-jump-char-mode) ,c))))
-
-;; 	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-" c))
-;; 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-" c))
-;; 	     (loop for c from ?0 to ?9 do (add-keys-to-ace-jump-mode "H-M-" c 'word))
-;; 	     (loop for c from ?a to ?z do (add-keys-to-ace-jump-mode "H-M-" c 'word)))
 
 
 ;; Agda2 mode setup is performed at the end of the initalization
@@ -836,25 +609,22 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;                (shell-command-to-string "agda-mode locate")))
 
 
-(setq x->bool (lambda (elt) (not (not elt)))
-      darwin-p  (eq system-type 'darwin)
+(defvar darwin-p (eq system-type 'darwin))
+(make-variable-buffer-local 'darwin-p)
+(defvar ns-p (eq window-system 'ns))
+(make-variable-buffer-local 'ns-p)
+(defvar mac-p (eq window-system 'mac))
+(make-variable-buffer-local 'mac-p)
+(defvar linux-p (eq system-type 'gnu/linux))
+(make-variable-buffer-local 'linux-p)
+(defvar cygwin-p (eq system-type 'cygwin))
+(make-variable-buffer-local 'cygwin-p)
+(defvar nt-p (eq system-type 'windows-nt))
+(make-variable-buffer-local 'nt-p)
+(defvar windows-p (or cygwin-p nt-p))
+(make-variable-buffer-local 'windows-p)
 
-      ns-p      (eq window-system 'ns)
-      mac-p  (eq window-system 'mac)
-      linux-p   (eq system-type 'gnu/linux)
-      colinux-p (when linux-p
-		  (let ((file "/proc/modules"))
-		    (and
-		     (file-readable-p file)
-		     (x->bool
-		      (with-temp-buffer
-			(insert-file-contents file)
-			(goto-char (point-min))
-			(re-search-forward "^cofuse\.+" nil t))))))
-      cygwin-p  (eq system-type 'cygwin)
-      nt-p      (eq system-type 'windows-nt)
-      meadow-p  (featurep 'meadow)
-      windows-p (or cygwin-p nt-p meadow-p))
+
 
 (when (and darwin-p (or ns-p mac-p))
   (progn
@@ -878,6 +648,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 	  ns-right-command-modifier 'super
 	  ns-right-alternate-modifier 'hyper
     )))
+
 (when mac-p
   (progn
     (mac-auto-ascii-mode 1)
@@ -915,8 +686,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(haskell-process-type 'cabal-repl)
- '(package-selected-packages
-   '(cargo-mode protobuf-mode reason-mode volatile-highlights which-key use-package twittering-mode term+ rainbow-delimiters proof-general paredit-everywhere ox-qmd ox-gfm org-sticky-header open-junk-file multiple-cursors magit-section lsp-ui lsp-haskell helm-ls-git helm-idris haskell-mode go-mode gnuplot flycheck elm-yasnippets elm-mode eglot coq-commenter company-coq)))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
